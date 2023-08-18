@@ -4,18 +4,18 @@
 
   <meta charset="utf-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-  <title>References | Whole Exome Sequencing Platform</title>
+  <title>6 Summary | Whole Exome Sequencing Platform</title>
   <meta name="description" content="This is a pipeline for whole exome sequencing analysis." />
   <meta name="generator" content="bookdown 0.35 and GitBook 2.6.7" />
 
-  <meta property="og:title" content="References | Whole Exome Sequencing Platform" />
+  <meta property="og:title" content="6 Summary | Whole Exome Sequencing Platform" />
   <meta property="og:type" content="book" />
   
   <meta property="og:description" content="This is a pipeline for whole exome sequencing analysis." />
   
 
   <meta name="twitter:card" content="summary" />
-  <meta name="twitter:title" content="References | Whole Exome Sequencing Platform" />
+  <meta name="twitter:title" content="6 Summary | Whole Exome Sequencing Platform" />
   
   <meta name="twitter:description" content="This is a pipeline for whole exome sequencing analysis." />
   
@@ -30,8 +30,8 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black" />
   
   
-<link rel="prev" href="summary.html"/>
-
+<link rel="prev" href="variant-annotation.html"/>
+<link rel="next" href="references.html"/>
 <script src="libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/fuse.js@6.4.6/dist/fuse.min.js"></script>
 <link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
@@ -211,22 +211,47 @@ div.csl-indent {
           <div class="page-inner">
 
             <section class="normal" id="section-">
-<div id="references" class="section level1 unnumbered hasAnchor">
-<h1>References<a href="references.html#references" class="anchor-section" aria-label="Anchor link to header"></a></h1>
+<div id="summary" class="section level1 hasAnchor" number="6">
+<h1><span class="header-section-number">6</span> Summary<a href="summary.html#summary" class="anchor-section" aria-label="Anchor link to header"></a></h1>
+<p>Output the results of the analysis to an Excel workbook with seperate sheets for de novo, homozygous, unphased compound hetorygous and phased compound heterozygous variants. For compound heterozygous variants, highlight variants in the same transcript with a single colour for ease of viewing.</p>
+<div class="sourceCode" id="cb37"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb37-1"><a href="summary.html#cb37-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(openxlsx)</span>
+<span id="cb37-2"><a href="summary.html#cb37-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb37-3"><a href="summary.html#cb37-3" aria-hidden="true" tabindex="-1"></a>names <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">&quot;de_novo&quot;</span>, <span class="st">&quot;de_novo_gq&gt;=30&quot;</span>,<span class="st">&quot;homozygote&quot;</span>,<span class="st">&quot;unphased_compound_heterozygote&quot;</span>,<span class="st">&quot;phased_compound_heterozygote&quot;</span>,<span class="st">&quot;chrX&quot;</span>,<span class="st">&quot;ukpanelapp_green&quot;</span>,<span class="st">&quot;aupanelapp&quot;</span>,<span class="st">&quot;all_variants&quot;</span>)</span>
+<span id="cb37-4"><a href="summary.html#cb37-4" aria-hidden="true" tabindex="-1"></a>tables <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">&quot;prob_novo&quot;</span>,<span class="st">&quot;prob_novo_high_qual&quot;</span>,<span class="st">&quot;prob_hom&quot;</span>,<span class="st">&quot;prob_2plus_het2&quot;</span>,<span class="st">&quot;prob_comp_het2&quot;</span>,<span class="st">&quot;prob_X&quot;</span>,<span class="st">&quot;refseq_green&quot;</span>,<span class="st">&quot;refseq_au&quot;</span>,<span class="st">&quot;refseq5&quot;</span>)</span>
+<span id="cb37-5"><a href="summary.html#cb37-5" aria-hidden="true" tabindex="-1"></a>sheets <span class="ot">&lt;-</span> <span class="fu">data_frame</span>(names,tables)</span>
+<span id="cb37-6"><a href="summary.html#cb37-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb37-7"><a href="summary.html#cb37-7" aria-hidden="true" tabindex="-1"></a>wb <span class="ot">&lt;-</span> <span class="fu">createWorkbook</span>()</span>
+<span id="cb37-8"><a href="summary.html#cb37-8" aria-hidden="true" tabindex="-1"></a>negStyle <span class="ot">&lt;-</span> <span class="fu">createStyle</span>(<span class="at">fontColour =</span> <span class="st">&quot;#9C0006&quot;</span>, <span class="at">bgFill =</span> <span class="st">&quot;#FFC7CE&quot;</span>)</span>
+<span id="cb37-9"><a href="summary.html#cb37-9" aria-hidden="true" tabindex="-1"></a>posStyle <span class="ot">&lt;-</span> <span class="fu">createStyle</span>(<span class="at">fontColour =</span> <span class="st">&quot;#006100&quot;</span>, <span class="at">bgFill =</span> <span class="st">&quot;#C6EFCE&quot;</span>)</span>
+<span id="cb37-10"><a href="summary.html#cb37-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb37-11"><a href="summary.html#cb37-11" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> (i <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span><span class="fu">nrow</span>(sheets)) {</span>
+<span id="cb37-12"><a href="summary.html#cb37-12" aria-hidden="true" tabindex="-1"></a>  table <span class="ot">&lt;-</span> <span class="fu">get</span>(sheets<span class="sc">$</span>tables[i])</span>
+<span id="cb37-13"><a href="summary.html#cb37-13" aria-hidden="true" tabindex="-1"></a>  table<span class="sc">$</span>Group <span class="ot">&lt;-</span> <span class="fu">cumsum</span>(<span class="fu">c</span>(<span class="cn">TRUE</span>, <span class="fu">head</span>(table<span class="sc">$</span>Feature, <span class="sc">-</span><span class="dv">1</span>) <span class="sc">!=</span> <span class="fu">tail</span>(table<span class="sc">$</span>Feature, <span class="sc">-</span><span class="dv">1</span>)))</span>
+<span id="cb37-14"><a href="summary.html#cb37-14" aria-hidden="true" tabindex="-1"></a>  e_col <span class="ot">&lt;-</span> <span class="fu">int2col</span>(<span class="fu">ncol</span>(table))</span>
+<span id="cb37-15"><a href="summary.html#cb37-15" aria-hidden="true" tabindex="-1"></a>  e_col1 <span class="ot">&lt;-</span> <span class="fu">int2col</span>(<span class="fu">ncol</span>(table)<span class="sc">+</span><span class="dv">1</span>)</span>
+<span id="cb37-16"><a href="summary.html#cb37-16" aria-hidden="true" tabindex="-1"></a>  e_col2 <span class="ot">&lt;-</span> <span class="fu">int2col</span>(<span class="fu">ncol</span>(table)<span class="sc">+</span><span class="dv">2</span>)</span>
+<span id="cb37-17"><a href="summary.html#cb37-17" aria-hidden="true" tabindex="-1"></a>  table<span class="sc">$</span>helper1 <span class="ot">&lt;-</span> <span class="fu">paste</span>(<span class="st">&quot;=SUBTOTAL(103,&quot;</span>,e_col,<span class="dv">2</span><span class="sc">:</span>(<span class="fu">nrow</span>(table)<span class="sc">+</span><span class="dv">1</span>),<span class="st">&quot;)&quot;</span>, <span class="at">sep =</span> <span class="st">&quot;&quot;</span>)</span>
+<span id="cb37-18"><a href="summary.html#cb37-18" aria-hidden="true" tabindex="-1"></a>  table<span class="sc">$</span>helper2 <span class="ot">&lt;-</span> <span class="fu">paste</span>(<span class="st">&quot;=IF(&quot;</span>,e_col1,<span class="dv">2</span><span class="sc">:</span>(<span class="fu">nrow</span>(table)<span class="sc">+</span><span class="dv">1</span>),<span class="st">&quot;=1,IFERROR(MAX($&quot;</span>,e_col2,<span class="st">&quot;$1:&quot;</span>,e_col2,<span class="dv">1</span><span class="sc">:</span><span class="fu">nrow</span>(table),<span class="st">&quot;)+(COUNTIFS($&quot;</span>,e_col,<span class="st">&quot;$1:&quot;</span>,e_col,<span class="dv">1</span><span class="sc">:</span><span class="fu">nrow</span>(table),<span class="st">&quot;,&quot;</span>,e_col,<span class="dv">2</span><span class="sc">:</span>(<span class="fu">nrow</span>(table)<span class="sc">+</span><span class="dv">1</span>),<span class="st">&quot;,&quot;</span>,<span class="st">&quot;$&quot;</span>,e_col1,<span class="st">&quot;$1:&quot;</span>,e_col1,<span class="dv">1</span><span class="sc">:</span><span class="fu">nrow</span>(table),<span class="st">&quot;,1)=0),1),</span><span class="sc">\&quot;\&quot;</span><span class="st">)&quot;</span>, <span class="at">sep =</span> <span class="st">&quot;&quot;</span>)</span>
+<span id="cb37-19"><a href="summary.html#cb37-19" aria-hidden="true" tabindex="-1"></a>  <span class="fu">class</span>(table<span class="sc">$</span>helper1) <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="fu">class</span>(table<span class="sc">$</span>helper1), <span class="st">&quot;formula&quot;</span>)</span>
+<span id="cb37-20"><a href="summary.html#cb37-20" aria-hidden="true" tabindex="-1"></a>  <span class="fu">class</span>(table<span class="sc">$</span>helper2) <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="fu">class</span>(table<span class="sc">$</span>helper2), <span class="st">&quot;formula&quot;</span>)</span>
+<span id="cb37-21"><a href="summary.html#cb37-21" aria-hidden="true" tabindex="-1"></a>  <span class="fu">addWorksheet</span>(wb, sheets<span class="sc">$</span>names[i])</span>
+<span id="cb37-22"><a href="summary.html#cb37-22" aria-hidden="true" tabindex="-1"></a>  <span class="fu">writeDataTable</span>(wb,sheets<span class="sc">$</span>names[i], <span class="at">x =</span> table, <span class="at">tableStyle =</span> <span class="st">&quot;None&quot;</span>)</span>
+<span id="cb37-23"><a href="summary.html#cb37-23" aria-hidden="true" tabindex="-1"></a>  rule_odd <span class="ot">&lt;-</span> <span class="fu">paste</span>(<span class="st">&quot;ISODD($&quot;</span>, e_col2, <span class="st">&quot;1)&quot;</span>, <span class="at">sep =</span> <span class="st">&quot;&quot;</span>, <span class="at">collapse =</span> <span class="st">&quot;&quot;</span>)</span>
+<span id="cb37-24"><a href="summary.html#cb37-24" aria-hidden="true" tabindex="-1"></a>  rule_even <span class="ot">&lt;-</span> <span class="fu">paste</span>(<span class="st">&quot;ISEVEN($&quot;</span>, e_col2, <span class="st">&quot;1)&quot;</span>, <span class="at">sep =</span> <span class="st">&quot;&quot;</span>, <span class="at">collapse =</span> <span class="st">&quot;&quot;</span>)</span>
+<span id="cb37-25"><a href="summary.html#cb37-25" aria-hidden="true" tabindex="-1"></a>  <span class="fu">conditionalFormatting</span>(wb, sheets<span class="sc">$</span>names[i], <span class="at">cols =</span> <span class="dv">1</span><span class="sc">:</span><span class="fu">ncol</span>(table), <span class="at">rows =</span> <span class="dv">1</span><span class="sc">:</span>(<span class="fu">nrow</span>(table)<span class="sc">+</span><span class="dv">1</span>), <span class="at">rule =</span> rule_odd, <span class="at">style =</span> negStyle)</span>
+<span id="cb37-26"><a href="summary.html#cb37-26" aria-hidden="true" tabindex="-1"></a>  <span class="fu">conditionalFormatting</span>(wb, sheets<span class="sc">$</span>names[i], <span class="at">cols =</span> <span class="dv">1</span><span class="sc">:</span><span class="fu">ncol</span>(table), <span class="at">rows =</span> <span class="dv">1</span><span class="sc">:</span>(<span class="fu">nrow</span>(table)<span class="sc">+</span><span class="dv">1</span>), <span class="at">rule =</span> rule_even, <span class="at">style =</span> posStyle)</span>
+<span id="cb37-27"><a href="summary.html#cb37-27" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb37-28"><a href="summary.html#cb37-28" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb37-29"><a href="summary.html#cb37-29" aria-hidden="true" tabindex="-1"></a><span class="fu">saveWorkbook</span>(wb, <span class="st">&quot;pedigree_results_08_07_23.xlsx&quot;</span>, <span class="at">overwrite =</span> <span class="cn">TRUE</span>)</span></code></pre></div>
 
-<div id="refs" class="references csl-bib-body hanging-indent">
-<div id="ref-ewels2020nf" class="csl-entry">
-Ewels, Philip A, Alexander Peltzer, Sven Fillinger, Harshil Patel, Johannes Alneberg, Andreas Wilm, Maxime Ulysse Garcia, Paolo Di Tommaso, and Sven Nahnsen. 2020. <span>“The Nf-Core Framework for Community-Curated Bioinformatics Pipelines.”</span> <em>Nature Biotechnology</em> 38 (3): 276–78.
-</div>
-</div>
 </div>
             </section>
 
           </div>
         </div>
       </div>
-<a href="summary.html" class="navigation navigation-prev navigation-unique" aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
-
+<a href="variant-annotation.html" class="navigation navigation-prev " aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
+<a href="references.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
     </div>
   </div>
 <script src="libs/gitbook-2.6.7/js/app.min.js"></script>

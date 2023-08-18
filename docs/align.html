@@ -4,18 +4,18 @@
 
   <meta charset="utf-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-  <title>References | Whole Exome Sequencing Platform</title>
+  <title>2 Alignment | Whole Exome Sequencing Platform</title>
   <meta name="description" content="This is a pipeline for whole exome sequencing analysis." />
   <meta name="generator" content="bookdown 0.35 and GitBook 2.6.7" />
 
-  <meta property="og:title" content="References | Whole Exome Sequencing Platform" />
+  <meta property="og:title" content="2 Alignment | Whole Exome Sequencing Platform" />
   <meta property="og:type" content="book" />
   
   <meta property="og:description" content="This is a pipeline for whole exome sequencing analysis." />
   
 
   <meta name="twitter:card" content="summary" />
-  <meta name="twitter:title" content="References | Whole Exome Sequencing Platform" />
+  <meta name="twitter:title" content="2 Alignment | Whole Exome Sequencing Platform" />
   
   <meta name="twitter:description" content="This is a pipeline for whole exome sequencing analysis." />
   
@@ -30,8 +30,8 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black" />
   
   
-<link rel="prev" href="summary.html"/>
-
+<link rel="prev" href="index.html"/>
+<link rel="next" href="calling.html"/>
 <script src="libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/fuse.js@6.4.6/dist/fuse.min.js"></script>
 <link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
@@ -211,13 +211,65 @@ div.csl-indent {
           <div class="page-inner">
 
             <section class="normal" id="section-">
-<div id="references" class="section level1 unnumbered hasAnchor">
-<h1>References<a href="references.html#references" class="anchor-section" aria-label="Anchor link to header"></a></h1>
-
-<div id="refs" class="references csl-bib-body hanging-indent">
-<div id="ref-ewels2020nf" class="csl-entry">
-Ewels, Philip A, Alexander Peltzer, Sven Fillinger, Harshil Patel, Johannes Alneberg, Andreas Wilm, Maxime Ulysse Garcia, Paolo Di Tommaso, and Sven Nahnsen. 2020. <span>“The Nf-Core Framework for Community-Curated Bioinformatics Pipelines.”</span> <em>Nature Biotechnology</em> 38 (3): 276–78.
+<div id="align" class="section level1 hasAnchor" number="2">
+<h1><span class="header-section-number">2</span> Alignment<a href="align.html#align" class="anchor-section" aria-label="Anchor link to header"></a></h1>
+<p>Based on <a href="https://gatk.broadinstitute.org/hc/en-us/articles/360035535912-Data-pre-processing-for-variant-discovery">GATK best practices</a>.</p>
+<div id="pre-processing" class="section level2 hasAnchor" number="2.1">
+<h2><span class="header-section-number">2.1</span> Pre-processing<a href="align.html#pre-processing" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>Data processing will start with either FASTQ files directly from the sequencer, or pre-processed BAM files of raw sequence data that has been aligned to the reference genome.
+Quality control of raw reads with <a href="http://www.bioinformatics.babraham.ac.uk/projects/fastqc/">FastQC</a>, a quality control tool for high throughput sequence data, written by Simon Andrews at the Babraham Institute in Cambridge.</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb1-1"><a href="align.html#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="ex">module</span> load fastqc</span></code></pre></div>
+<p>Trimming raw reads with <a href="https://github.com/OpenGene/fastp">fastp</a>, an ultra-fast all-in-one FASTQ preprocessor.
+Mapping reads to GRCh38 reference genome with BWA-MEM algorithm.
+Convert SAM to BAM with samtools.</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb2-1"><a href="align.html#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="ex">module</span> load fastp</span>
+<span id="cb2-2"><a href="align.html#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="ex">module</span> load bwa mem</span>
+<span id="cb2-3"><a href="align.html#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="ex">module</span> load samtools</span>
+<span id="cb2-4"><a href="align.html#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="bu">export</span> <span class="va">reference</span><span class="op">=</span><span class="va">$MUGQIC_INSTALL_HOME</span>/genomes/species/Homo_sapiens.GRCh38/genome/bwa_index/Homo_sapiens.GRCh38.fa</span>
+<span id="cb2-5"><a href="align.html#cb2-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-6"><a href="align.html#cb2-6" aria-hidden="true" tabindex="-1"></a><span class="ex">fastp</span> <span class="at">-i</span> EC25_1.fq.gz <span class="at">-I</span> EC25_2.fq.gz <span class="dt">\</span></span>
+<span id="cb2-7"><a href="align.html#cb2-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">--stdout</span> <span class="at">--thread</span> 2 <span class="dt">\</span></span>
+<span id="cb2-8"><a href="align.html#cb2-8" aria-hidden="true" tabindex="-1"></a>    <span class="at">-j</span> <span class="st">&quot;fastp-EC25.json&quot;</span> <span class="dt">\</span></span>
+<span id="cb2-9"><a href="align.html#cb2-9" aria-hidden="true" tabindex="-1"></a>    <span class="at">-h</span> <span class="st">&quot;fastp-EC25.html&quot;</span> <span class="dt">\</span></span>
+<span id="cb2-10"><a href="align.html#cb2-10" aria-hidden="true" tabindex="-1"></a>    <span class="dv">2</span><span class="op">&gt;</span> <span class="st">&quot;fastp-EC25.log&quot;</span> <span class="dt">\</span></span>
+<span id="cb2-11"><a href="align.html#cb2-11" aria-hidden="true" tabindex="-1"></a><span class="kw">|</span> <span class="ex">bwa</span> mem <span class="at">-v</span> 2 <span class="at">-M</span> <span class="at">-t</span> 32 <span class="at">-p</span> <span class="dt">\</span></span>
+<span id="cb2-12"><a href="align.html#cb2-12" aria-hidden="true" tabindex="-1"></a>    <span class="va">$reference</span> <span class="at">-</span> <span class="dv">2</span><span class="op">&gt;</span> <span class="st">&quot;bwa-EC25.log&quot;</span> <span class="dt">\</span></span>
+<span id="cb2-13"><a href="align.html#cb2-13" aria-hidden="true" tabindex="-1"></a><span class="kw">|</span> <span class="ex">samtools</span> view <span class="at">-@</span> 16 <span class="dt">\</span></span>
+<span id="cb2-14"><a href="align.html#cb2-14" aria-hidden="true" tabindex="-1"></a>    <span class="at">-O</span> BAM <span class="dt">\</span></span>
+<span id="cb2-15"><a href="align.html#cb2-15" aria-hidden="true" tabindex="-1"></a>    <span class="at">-o</span> <span class="st">&quot;aligned_EC25.bam&quot;</span> <span class="dt">\</span></span>
+<span id="cb2-16"><a href="align.html#cb2-16" aria-hidden="true" tabindex="-1"></a>    <span class="dv">2</span><span class="op">&gt;</span> <span class="st">&quot;samtools-EC25.log&quot;</span></span></code></pre></div>
 </div>
+<div id="mark-duplicates" class="section level2 hasAnchor" number="2.2">
+<h2><span class="header-section-number">2.2</span> Mark Duplicates<a href="align.html#mark-duplicates" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>Identify read pairs that are likely to have originated from duplicates of the same DNA fragment with GATK MarkDuplicates.</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb3-1"><a href="align.html#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="ex">java</span> <span class="at">-Xms60G</span> <span class="at">-Xmx60G</span> <span class="at">-jar</span> <span class="va">$GATK_JAR</span> MarkDuplicatesSpark <span class="dt">\</span></span>
+<span id="cb3-2"><a href="align.html#cb3-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">-I</span> aligned_EC25.bam <span class="dt">\</span></span>
+<span id="cb3-3"><a href="align.html#cb3-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">-O</span> aligned_EC25_markdup.bam <span class="dt">\</span></span>
+<span id="cb3-4"><a href="align.html#cb3-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">--spark-master</span> local[12]</span></code></pre></div>
+</div>
+<div id="base-quality-score-recalibration" class="section level2 hasAnchor" number="2.3">
+<h2><span class="header-section-number">2.3</span> Base Quality Score Recalibration<a href="align.html#base-quality-score-recalibration" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p><a href="https://gatk.broadinstitute.org/hc/en-us/articles/360042477672-BaseRecalibrator">GATK BaseRecalibrator</a> generates a recalibration table based on various covariates, i.e., read group, reported quality score, machine cycle, and nucleotide context. <a href="https://gatk.broadinstitute.org/hc/en-us/articles/5358826654875-ApplyBQSR">GATK ApplyBQSR</a> recalibrates the base qualities of the input reads based on the recalibration table.</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb4-1"><a href="align.html#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="ex">java</span> <span class="at">-Xms4G</span> <span class="at">-Xmx4G</span> <span class="at">-jar</span> <span class="va">$GATK_JAR</span> BaseRecalibrator <span class="dt">\</span></span>
+<span id="cb4-2"><a href="align.html#cb4-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">-I</span> aligned_EC25_markdup.bam <span class="dt">\</span></span>
+<span id="cb4-3"><a href="align.html#cb4-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">-R</span> <span class="va">$reference</span> <span class="dt">\</span></span>
+<span id="cb4-4"><a href="align.html#cb4-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">-O</span> aligned_EC25_markdup_bqsr.report <span class="dt">\</span></span>
+<span id="cb4-5"><a href="align.html#cb4-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">--known-sites</span> BQSR/Homo_sapiens_assembly38.dbsnp138.vcf <span class="dt">\</span></span>
+<span id="cb4-6"><a href="align.html#cb4-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">--known-sites</span> BQSR/Homo_sapiens_assembly38.known_indels.vcf.gz <span class="dt">\</span></span>
+<span id="cb4-7"><a href="align.html#cb4-7" aria-hidden="true" tabindex="-1"></a>  <span class="at">--known-sites</span> BQSR/Mills_and_1000G_gold_standard.indels.hg38.vcf.gz</span>
+<span id="cb4-8"><a href="align.html#cb4-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-9"><a href="align.html#cb4-9" aria-hidden="true" tabindex="-1"></a><span class="ex">java</span> <span class="at">-Xms2G</span> <span class="at">-Xmx2G</span> <span class="at">-jar</span> <span class="va">$GATK_JAR</span> ApplyBQSR <span class="dt">\</span></span>
+<span id="cb4-10"><a href="align.html#cb4-10" aria-hidden="true" tabindex="-1"></a>  <span class="at">-I</span> aligned_EC25_markdup.bam <span class="dt">\</span></span>
+<span id="cb4-11"><a href="align.html#cb4-11" aria-hidden="true" tabindex="-1"></a>  <span class="at">-R</span> <span class="va">$reference</span> <span class="dt">\</span></span>
+<span id="cb4-12"><a href="align.html#cb4-12" aria-hidden="true" tabindex="-1"></a>  <span class="at">--bqsr-recal-file</span> aligned_EC25_markdup_bqsr.report <span class="dt">\</span></span>
+<span id="cb4-13"><a href="align.html#cb4-13" aria-hidden="true" tabindex="-1"></a>  <span class="at">-O</span> aligned_EC25_markdup_bqsr.bam</span></code></pre></div>
+</div>
+<div id="quality-control" class="section level2 hasAnchor" number="2.4">
+<h2><span class="header-section-number">2.4</span> Quality Control<a href="align.html#quality-control" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p><a href="https://www.htslib.org/doc/samtools.html">samtools stats</a> collects statistics from CRAM files and outputs in a text format.
+<a href="https://github.com/brentp/mosdepth">Mosdepth</a> reports information for the evaluation of the quality of the provided alignment data. In short, the basic statistics of the alignment (number of reads, coverage, GC-content, etc.) are summarized and a number of useful graphs are produced.
+<a href="http://multiqc.info/">MultiQC</a> is a visualization tool that generates a single HTML report summarizing all samples in your project.</p>
+
 </div>
 </div>
             </section>
@@ -225,8 +277,8 @@ Ewels, Philip A, Alexander Peltzer, Sven Fillinger, Harshil Patel, Johannes Alne
           </div>
         </div>
       </div>
-<a href="summary.html" class="navigation navigation-prev navigation-unique" aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
-
+<a href="index.html" class="navigation navigation-prev " aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
+<a href="calling.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
     </div>
   </div>
 <script src="libs/gitbook-2.6.7/js/app.min.js"></script>

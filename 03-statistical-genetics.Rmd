@@ -16,9 +16,20 @@ aligned_HG002.bam aligned_HG003.bam aligned_HG004.bam \
 We seek to confirm pedigrees and identify hidden relatedness between samples. We first select SNPs in approximate linkage equilibrium with Linkdatagen based on the genetic linkage map of HapMap SNPs. Linkdatagen also eliminates Mendelian inconsitencies in the data.
 
 ```{bash eval=FALSE}
-perl vcf2linkdatagen.pl -variantCaller mpileup -annotfile annotHapMap2U.txt -pop CEU -mindepth 10 -missingness 0 -idlist MyVCFlist.txt > MySNPs.brlmm
+perl vcf2linkdatagen.pl \
+-variantCaller mpileup \
+-annotfile annotHapMap2U.txt \
+-pop CEU -mindepth 10 -missingness 0 \
+-idlist MyVCFlist.txt > MySNPs.brlmm
 
-perl linkdatagen.pl -data m -pedfile MyPed.ped -whichSamplesFile MyWS.ws -callFile MySNPs.brlmm -annotFile annotHapMap2U.txt -pop CEU -binsize 0.3 -MendelErrors removeSNPs -prog pl -outputDir MyPed_HapMap2_pl > MyPed_HapMap2_pl.out
+perl linkdatagen.pl \
+-data m -pedfile MyPed.ped \
+-whichSamplesFile MyWS.ws \
+-callFile MySNPs.brlmm \
+-annotFile annotHapMap2U.txt \
+-pop CEU -binsize 0.3 \
+-MendelErrors removeSNPs -prog pl \
+-outputDir MyPed_HapMap2_pl > MyPed_HapMap2_pl.out
 ```
 
 We construct an allele frequency report for the chosen SNPs.
@@ -26,7 +37,11 @@ We construct an allele frequency report for the chosen SNPs.
 ```{r eval=FALSE}
 map <- read_delim(file = "plink.map", delim = " ", col_select = 1:4, col_names = c("CHR", "SNP", "cM", "bp"))
 ord <- read_tsv(file = "orderedSNPs.txt")
-freq_pl <- map %>% left_join(ord, by = "SNP") %>% dplyr::select(CHR, SNP, `Allele freq`) %>% mutate(A1="1") %>% mutate(A1="1") %>% mutate(A2="2") %>% mutate(NCHROBS="300") %>% dplyr::select(CHR, SNP, A1, A2, `Allele freq`, NCHROBS) %>% rename(`Allele freq` = "MAF")
+freq_pl <- map %>% left_join(ord, by = "SNP") %>% 
+  dplyr::select(CHR, SNP, `Allele freq`) %>% 
+  mutate(A1="1") %>% mutate(A1="1") %>% mutate(A2="2") %>% mutate(NCHROBS="300") %>% 
+  dplyr::select(CHR, SNP, A1, A2, `Allele freq`, NCHROBS) %>% 
+  rename(`Allele freq` = "MAF")
 write_delim(freq_pl, "freq_pl.frq", delim = " ")
 ```
 
@@ -58,7 +73,14 @@ HomozygosityMapper <https://www.homozygositymapper.org/>, PLINK
 Linkdatagen, PBAP, MORGAN, MERLIN, Allegro, OpenMendel, Pedminer
 
 ```{bash eval=FALSE}
-perl linkdatagen.pl -data m -pedfile MyPed.ped -whichSamplesFile MyWS.ws -callFile MySNPs.brlmm -annotFile annotHapMap2U.txt -pop CEU -binsize 0.3 -MendelErrors removeSNPs -prog me -outputDir MyPed_HapMap2 > MyPed_HapMap2_me.out
+perl linkdatagen.pl \
+-data m -pedfile MyPed.ped \
+-whichSamplesFile MyWS.ws \
+-callFile MySNPs.brlmm \
+-annotFile annotHapMap2U.txt \
+-pop CEU -binsize 0.3 \
+-MendelErrors removeSNPs -prog me \
+-outputDir MyPed_HapMap2 > MyPed_HapMap2_me.out
 ```
 
 Two-point linkage

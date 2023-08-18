@@ -4,32 +4,26 @@
 
   <meta charset="utf-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-  <title>Page not found | A Minimal Book Example</title>
-  <meta name="description" content="<p>This is a minimal example of using the bookdown package to write a book.
-The HTML output format for this example is bookdown::gitbook,
-set in the _output.yml file.</p>" />
+  <title>Page not found | Whole Exome Sequencing Platform</title>
+  <meta name="description" content="This is a pipeline for whole exome sequencing analysis." />
   <meta name="generator" content="bookdown 0.35 and GitBook 2.6.7" />
 
-  <meta property="og:title" content="Page not found | A Minimal Book Example" />
+  <meta property="og:title" content="Page not found | Whole Exome Sequencing Platform" />
   <meta property="og:type" content="book" />
   
-  <meta property="og:description" content="<p>This is a minimal example of using the bookdown package to write a book.
-The HTML output format for this example is bookdown::gitbook,
-set in the _output.yml file.</p>" />
-  <meta name="github-repo" content="rstudio/bookdown-demo" />
+  <meta property="og:description" content="This is a pipeline for whole exome sequencing analysis." />
+  
 
   <meta name="twitter:card" content="summary" />
-  <meta name="twitter:title" content="Page not found | A Minimal Book Example" />
+  <meta name="twitter:title" content="Page not found | Whole Exome Sequencing Platform" />
   
-  <meta name="twitter:description" content="<p>This is a minimal example of using the bookdown package to write a book.
-The HTML output format for this example is bookdown::gitbook,
-set in the _output.yml file.</p>" />
+  <meta name="twitter:description" content="This is a pipeline for whole exome sequencing analysis." />
   
 
-<meta name="author" content="John Doe" />
+<meta name="author" content="Marc Henein and Zachary Sentell" />
 
 
-<meta name="date" content="2023-08-17" />
+<meta name="date" content="2023-08-18" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -165,49 +159,41 @@ div.csl-indent {
       <nav role="navigation">
 
 <ul class="summary">
-<li><a href="./">A Minimal Book Example</a></li>
-
+<li><a href="./">Whole Exome Sequencing Platform</a></li>
 <li class="divider"></li>
-<li class="chapter" data-level="1" data-path="index.html"><a href="index.html"><i class="fa fa-check"></i><b>1</b> About</a>
+<li class="chapter" data-level="1" data-path="index.html"><a href="index.html"><i class="fa fa-check"></i><b>1</b> Overview</a></li>
+<li class="chapter" data-level="2" data-path="align.html"><a href="align.html"><i class="fa fa-check"></i><b>2</b> Alignment</a>
 <ul>
-<li class="chapter" data-level="1.1" data-path="index.html"><a href="index.html#usage"><i class="fa fa-check"></i><b>1.1</b> Usage</a></li>
-<li class="chapter" data-level="1.2" data-path="index.html"><a href="index.html#render-book"><i class="fa fa-check"></i><b>1.2</b> Render book</a></li>
-<li class="chapter" data-level="1.3" data-path="index.html"><a href="index.html#preview-book"><i class="fa fa-check"></i><b>1.3</b> Preview book</a></li>
+<li class="chapter" data-level="2.1" data-path="align.html"><a href="align.html#pre-processing"><i class="fa fa-check"></i><b>2.1</b> Pre-processing</a></li>
+<li class="chapter" data-level="2.2" data-path="align.html"><a href="align.html#mark-duplicates"><i class="fa fa-check"></i><b>2.2</b> Mark Duplicates</a></li>
+<li class="chapter" data-level="2.3" data-path="align.html"><a href="align.html#base-quality-score-recalibration"><i class="fa fa-check"></i><b>2.3</b> Base Quality Score Recalibration</a></li>
+<li class="chapter" data-level="2.4" data-path="align.html"><a href="align.html#quality-control"><i class="fa fa-check"></i><b>2.4</b> Quality Control</a></li>
 </ul></li>
-<li class="chapter" data-level="2" data-path="hello-bookdown.html"><a href="hello-bookdown.html"><i class="fa fa-check"></i><b>2</b> Hello bookdown</a>
+<li class="chapter" data-level="3" data-path="calling.html"><a href="calling.html"><i class="fa fa-check"></i><b>3</b> Variant Calling</a>
 <ul>
-<li class="chapter" data-level="2.1" data-path="hello-bookdown.html"><a href="hello-bookdown.html#a-section"><i class="fa fa-check"></i><b>2.1</b> A section</a>
+<li class="chapter" data-level="3.1" data-path="calling.html"><a href="calling.html#snvindel-calling"><i class="fa fa-check"></i><b>3.1</b> SNV/Indel Calling</a></li>
+<li class="chapter" data-level="3.2" data-path="calling.html"><a href="calling.html#variant-filtration"><i class="fa fa-check"></i><b>3.2</b> Variant Filtration</a></li>
+<li class="chapter" data-level="3.3" data-path="calling.html"><a href="calling.html#genotype-posteriors"><i class="fa fa-check"></i><b>3.3</b> Genotype Posteriors</a></li>
+</ul></li>
+<li class="chapter" data-level="4" data-path="statistical-genetics.html"><a href="statistical-genetics.html"><i class="fa fa-check"></i><b>4</b> Statistical Genetics</a>
 <ul>
-<li class="chapter" data-level="" data-path="hello-bookdown.html"><a href="hello-bookdown.html#an-unnumbered-section"><i class="fa fa-check"></i>An unnumbered section</a></li>
+<li class="chapter" data-level="4.1" data-path="statistical-genetics.html"><a href="statistical-genetics.html#phasing"><i class="fa fa-check"></i><b>4.1</b> Phasing</a></li>
+<li class="chapter" data-level="4.2" data-path="statistical-genetics.html"><a href="statistical-genetics.html#kinship"><i class="fa fa-check"></i><b>4.2</b> Kinship</a></li>
+<li class="chapter" data-level="4.3" data-path="statistical-genetics.html"><a href="statistical-genetics.html#runs-of-homozygosity"><i class="fa fa-check"></i><b>4.3</b> Runs of Homozygosity</a></li>
+<li class="chapter" data-level="4.4" data-path="statistical-genetics.html"><a href="statistical-genetics.html#linkage-analysis"><i class="fa fa-check"></i><b>4.4</b> Linkage Analysis</a></li>
+<li class="chapter" data-level="4.5" data-path="statistical-genetics.html"><a href="statistical-genetics.html#population-substructure"><i class="fa fa-check"></i><b>4.5</b> Population Substructure</a></li>
 </ul></li>
-</ul></li>
-<li class="chapter" data-level="3" data-path="cross.html"><a href="cross.html"><i class="fa fa-check"></i><b>3</b> Cross-references</a>
+<li class="chapter" data-level="5" data-path="variant-annotation.html"><a href="variant-annotation.html"><i class="fa fa-check"></i><b>5</b> Variant Annotation</a>
 <ul>
-<li class="chapter" data-level="3.1" data-path="cross.html"><a href="cross.html#chapters-and-sub-chapters"><i class="fa fa-check"></i><b>3.1</b> Chapters and sub-chapters</a></li>
-<li class="chapter" data-level="3.2" data-path="cross.html"><a href="cross.html#captioned-figures-and-tables"><i class="fa fa-check"></i><b>3.2</b> Captioned figures and tables</a></li>
+<li class="chapter" data-level="5.1" data-path="variant-annotation.html"><a href="variant-annotation.html#filtration"><i class="fa fa-check"></i><b>5.1</b> Filtration</a></li>
+<li class="chapter" data-level="5.2" data-path="variant-annotation.html"><a href="variant-annotation.html#de-novo-variants"><i class="fa fa-check"></i><b>5.2</b> <em>De Novo</em> Variants</a></li>
+<li class="chapter" data-level="5.3" data-path="variant-annotation.html"><a href="variant-annotation.html#homozygous-variants"><i class="fa fa-check"></i><b>5.3</b> Homozygous Variants</a></li>
+<li class="chapter" data-level="5.4" data-path="variant-annotation.html"><a href="variant-annotation.html#compound-heterozygous-variants"><i class="fa fa-check"></i><b>5.4</b> Compound Heterozygous Variants</a></li>
+<li class="chapter" data-level="5.5" data-path="variant-annotation.html"><a href="variant-annotation.html#x-chromosome"><i class="fa fa-check"></i><b>5.5</b> X Chromosome</a></li>
+<li class="chapter" data-level="5.6" data-path="variant-annotation.html"><a href="variant-annotation.html#disease-genes"><i class="fa fa-check"></i><b>5.6</b> Disease Genes</a></li>
 </ul></li>
-<li class="chapter" data-level="4" data-path="parts.html"><a href="parts.html"><i class="fa fa-check"></i><b>4</b> Parts</a></li>
-<li class="chapter" data-level="5" data-path="footnotes-and-citations.html"><a href="footnotes-and-citations.html"><i class="fa fa-check"></i><b>5</b> Footnotes and citations</a>
-<ul>
-<li class="chapter" data-level="5.1" data-path="footnotes-and-citations.html"><a href="footnotes-and-citations.html#footnotes"><i class="fa fa-check"></i><b>5.1</b> Footnotes</a></li>
-<li class="chapter" data-level="5.2" data-path="footnotes-and-citations.html"><a href="footnotes-and-citations.html#citations"><i class="fa fa-check"></i><b>5.2</b> Citations</a></li>
-</ul></li>
-<li class="chapter" data-level="6" data-path="blocks.html"><a href="blocks.html"><i class="fa fa-check"></i><b>6</b> Blocks</a>
-<ul>
-<li class="chapter" data-level="6.1" data-path="blocks.html"><a href="blocks.html#equations"><i class="fa fa-check"></i><b>6.1</b> Equations</a></li>
-<li class="chapter" data-level="6.2" data-path="blocks.html"><a href="blocks.html#theorems-and-proofs"><i class="fa fa-check"></i><b>6.2</b> Theorems and proofs</a></li>
-<li class="chapter" data-level="6.3" data-path="blocks.html"><a href="blocks.html#callout-blocks"><i class="fa fa-check"></i><b>6.3</b> Callout blocks</a></li>
-</ul></li>
-<li class="chapter" data-level="7" data-path="sharing-your-book.html"><a href="sharing-your-book.html"><i class="fa fa-check"></i><b>7</b> Sharing your book</a>
-<ul>
-<li class="chapter" data-level="7.1" data-path="sharing-your-book.html"><a href="sharing-your-book.html#publishing"><i class="fa fa-check"></i><b>7.1</b> Publishing</a></li>
-<li class="chapter" data-level="7.2" data-path="sharing-your-book.html"><a href="sharing-your-book.html#pages"><i class="fa fa-check"></i><b>7.2</b> 404 pages</a></li>
-<li class="chapter" data-level="7.3" data-path="sharing-your-book.html"><a href="sharing-your-book.html#metadata-for-sharing"><i class="fa fa-check"></i><b>7.3</b> Metadata for sharing</a></li>
-</ul></li>
+<li class="chapter" data-level="6" data-path="summary.html"><a href="summary.html"><i class="fa fa-check"></i><b>6</b> Summary</a></li>
 <li class="chapter" data-level="" data-path="references.html"><a href="references.html"><i class="fa fa-check"></i>References</a></li>
-<li class="divider"></li>
-<li><a href="https://github.com/rstudio/bookdown" target="blank">Published with bookdown</a></li>
-
 </ul>
 
       </nav>
@@ -217,7 +203,7 @@ div.csl-indent {
       <div class="body-inner">
         <div class="book-header" role="navigation">
           <h1>
-            <i class="fa fa-circle-o-notch fa-spin"></i><a href="./">A Minimal Book Example</a>
+            <i class="fa fa-circle-o-notch fa-spin"></i><a href="./">Whole Exome Sequencing Platform</a>
           </h1>
         </div>
 
@@ -268,8 +254,8 @@ gitbook.start({
 "size": 2
 },
 "edit": {
-"link": "https://github.com/USERNAME/REPO/edit/BRANCH/%s",
-"text": "Edit"
+"link": null,
+"text": null
 },
 "history": {
 "link": null,
@@ -279,7 +265,7 @@ gitbook.start({
 "link": null,
 "text": null
 },
-"download": ["_main.pdf", "_main.epub"],
+"download": null,
 "search": {
 "engine": "fuse",
 "options": null
@@ -291,20 +277,6 @@ gitbook.start({
 });
 </script>
 
-<!-- dynamically load mathjax for compatibility with self-contained -->
-<script>
-  (function () {
-    var script = document.createElement("script");
-    script.type = "text/javascript";
-    var src = "true";
-    if (src === "" || src === "true") src = "https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.9/latest.js?config=TeX-MML-AM_CHTML";
-    if (location.protocol !== "file:")
-      if (/^https?:/.test(src))
-        src = src.replace(/^https?:/, '');
-    script.src = src;
-    document.getElementsByTagName("head")[0].appendChild(script);
-  })();
-</script>
 </body>
 
 </html>

@@ -63,11 +63,14 @@ pos <- rowRanges(wh)
 pos2 <- as.data.frame(pos) %>% as_tibble 
 
 # Genotype
-wh_geno <- geno(wh)$GT %>% as_tibble() %>% dplyr::rename("mother"= sym(mother), "father"= sym(father), "proband"= sym(proband))
+wh_geno <- geno(wh)$GT %>% as_tibble() %>% 
+  dplyr::rename("mother"= sym(mother), "father"= sym(father), "proband"= sym(proband))
 # Phasing block
-wh_ps <- geno(wh)$PS %>% as_tibble() %>% dplyr::rename("PS_mother" = sym(mother), "PS_father"= sym(father), "PS_proband"= sym(proband))
+wh_ps <- geno(wh)$PS %>% as_tibble() %>% 
+  dplyr::rename("PS_mother" = sym(mother), "PS_father"= sym(father), "PS_proband"= sym(proband))
 # Genotype quality
-wh_gq <- geno(wh)$GQ %>% as_tibble() %>% dplyr::rename("GQ_mother" = sym(mother), "GQ_father"= sym(father), "GQ_proband"= sym(proband))
+wh_gq <- geno(wh)$GQ %>% as_tibble() %>% 
+  dplyr::rename("GQ_mother" = sym(mother), "GQ_father"= sym(father), "GQ_proband"= sym(proband))
 # Join genotype, phasing block and genotype quality
 wh_geno0 <- bind_cols(pos2,wh_geno,wh_gq,wh_ps)
 
@@ -79,7 +82,10 @@ wh_geno01 <- wh_geno0 %>%
 
 # Convert variant formatting to VEP format. Add 1 to indel start site.
 wh_geno01 <- wh_geno01 %>% 
-  mutate(Location = ifelse(width==1, ifelse(nchar(ALT)==1, paste(seqnames,start,sep=":"), paste0(seqnames,":",start,"-",start+1)), ifelse(start+1==end, paste0(seqnames,":",start+1), paste0(seqnames,":",start+1,"-",end)))) %>% 
+  mutate(Location = ifelse(
+    width==1, ifelse(
+      nchar(ALT)==1, paste(seqnames,start,sep=":"), paste0(seqnames,":",start,"-",start+1)), ifelse(
+        start+1==end, paste0(seqnames,":",start+1), paste0(seqnames,":",start+1,"-",end)))) %>% 
   mutate(Allele = ifelse(substr(REF,1,1)==substr(ALT,1,1), substr(ALT,2,nchar(ALT)), ALT))
 wh_geno01$Allele[wh_geno01$Allele==""] <- "-"
 
@@ -102,7 +108,10 @@ wh_geno_auto
 Manually remove the hashtag before the line of column titles in ensembl_ann_vep_filt.txt. Load the filtered variants into R. Select variants with an allele frequency \<0.01 that fall in RefSeq transcripts.
 
 ```{r eval=FALSE}
-result <- read_table("ensembl_ann_vep_filt_refined_08_07_23.txt", comment = "#", na="-", col_types = list(Uploaded_variation= col_factor(), Gene=col_factor(), Feature=col_factor(), MANE_PLUS_CLINICAL = col_character(), MOTIF_NAME = col_character(), HIGH_INF_POS = col_character(), TRANSCRIPTION_FACTORS = col_character(), PUBMED=col_character(), MOTIF_POS = col_character()))
+result <- read_table("ensembl_ann_vep_filt_refined_08_07_23.txt", comment = "#", na="-", col_types = list(
+  Uploaded_variation= col_factor(), Gene=col_factor(), Feature=col_factor(), MANE_PLUS_CLINICAL = col_character(), 
+  MOTIF_NAME = col_character(), HIGH_INF_POS = col_character(), TRANSCRIPTION_FACTORS = col_character(), 
+  PUBMED=col_character(), MOTIF_POS = col_character()))
 result$Allele[is.na(result$Allele)] <- "-"
 result1 <- result %>% as_tibble %>% left_join(wh_geno1, by = c("Location","Allele"))
 refseq0 <- result1 %>% 
@@ -119,7 +128,9 @@ Add gene-level information.
 library(ontologyIndex)
 
 # OMIM
-omim <- read_tsv("~/Documents/kidney_panel/omim/genemap2_edit.txt", name_repair="universal", col_types=list(Entrez.Gene.ID = col_factor())) %>% dplyr::rename(OMIM_Phenotypes = Phenotypes) %>% dplyr::select(Entrez.Gene.ID,OMIM_Phenotypes)
+omim <- read_tsv("~/Documents/kidney_panel/omim/genemap2_edit.txt", name_repair="universal", col_types=list(Entrez.Gene.ID = col_factor())) %>% 
+  dplyr::rename(OMIM_Phenotypes = Phenotypes) %>% 
+  dplyr::select(Entrez.Gene.ID,OMIM_Phenotypes)
 
 # Human Phenotype Ontology
 hpo_data <- read_tsv("~/Documents/kidney_panel/genes_to_phenotype.txt", col_types=list(entrez_gene_id = col_factor()))
@@ -129,7 +140,10 @@ hpo_kidney <- get_descendants(hpo, roots="HP:0000077") #Abnormality of the kidne
 gen_hpo_kidney <- hpo_data %>% 
   dplyr::filter(hpo_term_id %in% hpo_kidney) %>% 
   dplyr::arrange(frequency_hpo) %>% 
-  dplyr::mutate(frequency = case_when(frequency_hpo == "HP:0040284" ~ " (very rare)", frequency_hpo == "HP:0040283" ~ " (occasional)", frequency_hpo == "HP:0040282" ~ " (frequent)", frequency_hpo == "HP:0040281" ~ " (very frequent)", frequency_hpo == "HP:0040280" ~ " (obligate)", TRUE ~ "")) %>% 
+  dplyr::mutate(frequency = case_when(
+    frequency_hpo == "HP:0040284" ~ " (very rare)", frequency_hpo == "HP:0040283" ~ " (occasional)", 
+    frequency_hpo == "HP:0040282" ~ " (frequent)", frequency_hpo == "HP:0040281" ~ " (very frequent)", 
+    frequency_hpo == "HP:0040280" ~ " (obligate)", TRUE ~ "")) %>% 
   unite("renal_hpo_term", c(hpo_term_name, frequency), remove = FALSE, sep = "") %>% 
   dplyr::group_by(entrez_gene_id) %>% 
   dplyr::summarise(renal_hpo_term = toString(unique(renal_hpo_term)))
@@ -157,7 +171,10 @@ gencc_def <- gencc %>%
   dplyr::filter(submitter_title != "Orphanet") %>% 
   dplyr::filter(classification_title == "Definitive") %>% 
   dplyr::group_by(gene_symbol, gene_curie, disease_title) %>% 
-  dplyr::summarise(submitter_title = toString(unique(submitter_title)), moi_title = toString(unique(moi_title)), disease_curie = toString(unique(disease_curie)), disease_original_curie = toString(unique(disease_original_curie)), classification_title = toString(classification_title), submitted_as_pmids = toString(unique(submitted_as_pmids))) %>%
+  dplyr::summarise(
+    submitter_title = toString(unique(submitter_title)), moi_title = toString(unique(moi_title)), 
+    disease_curie = toString(unique(disease_curie)), disease_original_curie = toString(unique(disease_original_curie)), 
+    classification_title = toString(classification_title), submitted_as_pmids = toString(unique(submitted_as_pmids))) %>%
   dplyr::mutate(submitter = paste("(", submitter_title, ")", sep = "")) %>% 
   tidyr::unite("gencc_disease_definitive", c(disease_title, submitter), remove = FALSE, sep = " ") %>% 
   dplyr::select(gene_curie, gencc_disease_definitive) %>% 
@@ -168,7 +185,10 @@ gencc_strong <- gencc %>%
   dplyr::filter(submitter_title != "Orphanet") %>% 
   dplyr::filter(classification_title == "Strong") %>% 
   dplyr::group_by(gene_symbol, gene_curie, disease_title) %>% 
-  dplyr::summarise(submitter_title = toString(unique(submitter_title)), moi_title = toString(unique(moi_title)), disease_curie = toString(unique(disease_curie)), disease_original_curie = toString(unique(disease_original_curie)), classification_title = toString(classification_title), submitted_as_pmids = toString(unique(submitted_as_pmids))) %>%
+  dplyr::summarise(
+    submitter_title = toString(unique(submitter_title)), moi_title = toString(unique(moi_title)), 
+    disease_curie = toString(unique(disease_curie)), disease_original_curie = toString(unique(disease_original_curie)), 
+    classification_title = toString(classification_title), submitted_as_pmids = toString(unique(submitted_as_pmids))) %>%
   dplyr::mutate(submitter = paste("(", submitter_title, ")", sep = "")) %>% 
   tidyr::unite("gencc_disease_strong", c(disease_title, submitter), remove = FALSE, sep = " ") %>% 
   dplyr::select(gene_curie, gencc_disease_strong) %>% 
@@ -241,9 +261,13 @@ Select *de novo* variants found in the filtered VEP annotation. For each variant
 
 ```{r eval=FALSE}
 prob_novo <- refseq %>% inner_join(geno_novo_not_ref)
-prob_novo <- prob_novo %>% group_by(Uploaded_variation) %>% arrange(desc(CANONICAL), as.character(Feature),.by_group = T) %>% dplyr::filter(Feature == Feature[1])
+prob_novo <- prob_novo %>% group_by(Uploaded_variation) %>% 
+  arrange(desc(CANONICAL), as.character(Feature),.by_group = T) %>% 
+  dplyr::filter(Feature == Feature[1])
 prob_novo_high_qual <- refseq %>% inner_join(geno_novo_not_ref_high_qual)
-prob_novo_high_qual <- prob_novo_high_qual %>% group_by(Uploaded_variation) %>% arrange(desc(CANONICAL), as.character(Feature),.by_group = T) %>% dplyr::filter(Feature == Feature[1])
+prob_novo_high_qual <- prob_novo_high_qual %>% group_by(Uploaded_variation) %>% 
+  arrange(desc(CANONICAL), as.character(Feature),.by_group = T) %>% 
+  dplyr::filter(Feature == Feature[1])
 prob_novo_high_qual
 ```
 
@@ -252,7 +276,8 @@ prob_novo_high_qual
 Select the homozygous variants in the proband.
 
 ```{r eval=FALSE}
-geno_hom <- wh_geno_auto %>% dplyr::filter(substr(proband,1,1)==substr(proband,3,3) & substr(proband,1,1) != 0 & substr(proband,1,1) != ".")
+geno_hom <- wh_geno_auto %>% 
+  dplyr::filter(substr(proband,1,1)==substr(proband,3,3) & substr(proband,1,1) != 0 & substr(proband,1,1) != ".")
 geno_hom[c(1:5)]
 ```
 
@@ -270,7 +295,9 @@ Select the homozygous variants found in the filtered VEP annotation. For each va
 
 ```{r eval=FALSE}
 prob_hom <- refseq %>% inner_join(geno_hom2)
-prob_hom <- prob_hom %>% group_by(Uploaded_variation) %>% arrange(desc(CANONICAL), as.character(Feature),.by_group = T) %>% dplyr::filter(Feature == Feature[1])
+prob_hom <- prob_hom %>% group_by(Uploaded_variation) %>% 
+  arrange(desc(CANONICAL), as.character(Feature),.by_group = T) %>% 
+  dplyr::filter(Feature == Feature[1])
 prob_hom
 ```
 
@@ -280,16 +307,23 @@ Select the unphased compound heterozygous variants.
 
 ```{r eval=FALSE}
 prob_2plus_het <- refseq %>% dplyr::filter(substr(proband,1,1)!=substr(proband,3,3)) 
-prob_2plus_het <- prob_2plus_het %>% group_by(Feature) %>% dplyr::filter(length(unique(PS_proband))>=2 | length(is.na(PS_proband)[is.na(PS_proband)==TRUE])>=2 ) %>% ungroup()
-prob_2plus_het2 <- prob_2plus_het %>% group_by(Gene) %>% arrange(desc(CANONICAL), as.character(Feature),.by_group = T) %>% dplyr::filter(Feature == Feature[1])
+prob_2plus_het <- prob_2plus_het %>% group_by(Feature) %>% 
+  dplyr::filter(length(unique(PS_proband))>=2 | length(is.na(PS_proband)[is.na(PS_proband)==TRUE])>=2 ) %>% 
+  ungroup()
+prob_2plus_het2 <- prob_2plus_het %>% group_by(Gene) %>% 
+  arrange(desc(CANONICAL), as.character(Feature),.by_group = T) %>% 
+  dplyr::filter(Feature == Feature[1])
 prob_2plus_het2
 ```
 
 Select the phased compound heterozygous variants.
 
 ```{r eval=FALSE}
-prob_comp_het <- refseq %>% group_by(Feature, PS_proband) %>% dplyr::filter(any(substr(proband,1,1)>=1 & substr(proband,2,2)=="|") & any(substr(proband,3,3)>=1 & substr(proband,2,2)=="|")) 
-prob_comp_het2 <- prob_comp_het %>% group_by(Gene) %>% arrange(desc(CANONICAL), as.character(Feature),.by_group = T) %>% dplyr::filter(Feature == Feature[1])
+prob_comp_het <- refseq %>% group_by(Feature, PS_proband) %>% 
+  dplyr::filter(any(substr(proband,1,1)>=1 & substr(proband,2,2)=="|") & any(substr(proband,3,3)>=1 & substr(proband,2,2)=="|")) 
+prob_comp_het2 <- prob_comp_het %>% group_by(Gene) %>% 
+  arrange(desc(CANONICAL), as.character(Feature),.by_group = T) %>% 
+  dplyr::filter(Feature == Feature[1])
 prob_comp_het2
 ```
 
@@ -300,7 +334,9 @@ Remove X chromosome calls that are "heterozygous" for male individuals.
 ```{r eval=FALSE}
 wh_geno_X_filt <- wh_geno_X %>% 
   dplyr::filter(( substr(proband,1,1)==substr(proband,3,3) & substr(father,1,1)==substr(father,3,3) ))
-prob_X <- inner_join(refseq_X, wh_geno_X) %>% group_by(Gene) %>% arrange(desc(CANONICAL), as.character(Feature),.by_group = T) %>% dplyr::filter(Feature == Feature[1])
+prob_X <- inner_join(refseq_X, wh_geno_X) %>% group_by(Gene) %>% 
+  arrange(desc(CANONICAL), as.character(Feature),.by_group = T) %>% 
+  dplyr::filter(Feature == Feature[1])
 prob_X
 ```
 
@@ -310,7 +346,9 @@ prob_X
 Select one entry for each variant in refseq table, prioritizing canonical and curated transcripts.
 
 ```{r eval=FALSE}
-refseq2 <- refseq01 %>% group_by(Uploaded_variation) %>% arrange(desc(CANONICAL), as.character(Feature),.by_group = T) %>% dplyr::filter(Feature == Feature[1])
+refseq2 <- refseq01 %>% group_by(Uploaded_variation) %>% 
+  arrange(desc(CANONICAL), as.character(Feature),.by_group = T) %>% 
+  dplyr::filter(Feature == Feature[1])
 refseq2
 ```
 
@@ -325,9 +363,10 @@ refseq_green <- refseq2 %>% dplyr::filter(HGNC_ID %in% panel_green$HGNC)
 #Australia Panel App
 panel_au <- read_tsv("Kidneyome_SuperPanel.tsv") %>% 
   dplyr::filter(!duplicated(HGNC)) %>%
-  dplyr::mutate(Status=case_when(GEL_Status==4|GEL_Status==3 ~ "Green", 
-                                 GEL_Status==2 ~ "Amber", 
-                                 GEL_Status==1|GEL_Status==0 ~ "Red")) %>%
+  dplyr::mutate(Status=case_when(
+    GEL_Status==4|GEL_Status==3 ~ "Green", 
+    GEL_Status==2 ~ "Amber", 
+    GEL_Status==1|GEL_Status==0 ~ "Red")) %>%
   dplyr::select(HGNC,Status)
 refseq_au <- refseq2 %>% inner_join(panel_au, join_by(HGNC_ID==HGNC))
 refseq_au
@@ -336,7 +375,8 @@ refseq_au
 Combine annotations.
 
 ```{r eval=FALSE}
-refseq3 <- refseq01 %>% group_by(Gene) %>% arrange(desc(CANONICAL), as.character(Feature),.by_group = T) %>% ungroup()
+refseq3 <- refseq01 %>% group_by(Gene) %>% 
+  arrange(desc(CANONICAL), as.character(Feature),.by_group = T) %>% ungroup()
 refseq4 <- refseq3 %>% 
   left_join(add_column(geno_novo_not_ref,de_novo="de_novo")) %>%
   left_join(add_column(geno_novo_not_ref_high_qual,de_novo_gq="de_novo_gq>=30")) %>%
@@ -346,7 +386,8 @@ refseq4 <- refseq3 %>%
   mutate(zygosity=coalesce(de_novo_gq,de_novo,homozygote,phased_compound_heterozygote,unphased_compound_heterozygote)) %>%
   dplyr::select(-c(de_novo_gq,de_novo,homozygote,phased_compound_heterozygote,unphased_compound_heterozygote)) %>%
   dplyr::relocate(zygosity,.after=counter)
-refseq_sum <- refseq4 %>% group_by(Feature) %>% summarize(z=paste(c(Uploaded_variation,Location,Allele,Consequence,Amino_acids,Codons), collapse = " ")) %>% 
+refseq_sum <- refseq4 %>% group_by(Feature) %>% 
+  summarize(z=paste(c(Uploaded_variation,Location,Allele,Consequence,Amino_acids,Codons), collapse = " ")) %>% 
   distinct(z,.keep_all = T)
 refseq5 <- refseq4 %>% dplyr::filter(Feature %in% refseq_sum$Feature)
 ```
