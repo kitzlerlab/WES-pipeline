@@ -3,4 +3,4 @@ bookdown::gitbook:
   config:
     toc:
       before: |
-        <li><a href="./">WES Platform</a></li>
+        <li><a href="./">Whole Exome Sequencing Platform</a></li>
