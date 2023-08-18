@@ -1,0 +1,72 @@
+# Alignment {#align}
+
+Based on [GATK best practices](https://gatk.broadinstitute.org/hc/en-us/articles/360035535912-Data-pre-processing-for-variant-discovery).
+
+## Pre-processing
+Data processing will start with either FASTQ files directly from the sequencer, or pre-processed BAM files of raw sequence data that has been aligned to the reference genome.
+Quality control of raw reads with [FastQC](http://www.bioinformatics.babraham.ac.uk/projects/fastqc/), a quality control tool for high throughput sequence data, written by Simon Andrews at the Babraham Institute in Cambridge.
+
+```{bash eval=FALSE}
+module load fastqc
+```
+
+Trimming raw reads with [fastp](https://github.com/OpenGene/fastp), an ultra-fast all-in-one FASTQ preprocessor.
+Mapping reads to GRCh38 reference genome with BWA-MEM algorithm.
+Convert SAM to BAM with samtools.
+
+```{bash eval=FALSE}
+module load fastp
+module load bwa mem
+module load samtools
+export reference=$MUGQIC_INSTALL_HOME/genomes/species/Homo_sapiens.GRCh38/genome/bwa_index/Homo_sapiens.GRCh38.fa
+
+fastp -i EC25_1.fq.gz -I EC25_2.fq.gz \
+    --stdout --thread 2 \
+    -j "fastp-EC25.json" \
+    -h "fastp-EC25.html" \
+    2> "fastp-EC25.log" \
+| bwa mem -v 2 -M -t 32 -p \
+    $reference - 2> "bwa-EC25.log" \
+| samtools view -@ 16 \
+    -O BAM \
+    -o "aligned_EC25.bam" \
+    2> "samtools-EC25.log"
+```
+
+## Mark Duplicates
+
+Identify read pairs that are likely to have originated from duplicates of the same DNA fragment with GATK MarkDuplicates.
+
+```{bash eval=FALSE}
+java -Xms60G -Xmx60G -jar $GATK_JAR MarkDuplicatesSpark \
+  -I aligned_EC25.bam \
+  -O aligned_EC25_markdup.bam \
+  --spark-master local[12]
+```
+
+## Base Quality Score Recalibration
+
+[GATK BaseRecalibrator](https://gatk.broadinstitute.org/hc/en-us/articles/360042477672-BaseRecalibrator) generates a recalibration table based on various covariates, i.e., read group, reported quality score, machine cycle, and nucleotide context. [GATK ApplyBQSR](https://gatk.broadinstitute.org/hc/en-us/articles/5358826654875-ApplyBQSR) recalibrates the base qualities of the input reads based on the recalibration table.
+
+```{bash eval=FALSE}
+java -Xms4G -Xmx4G -jar $GATK_JAR BaseRecalibrator \
+  -I aligned_EC25_markdup.bam \
+  -R $reference \
+  -O aligned_EC25_markdup_bqsr.report \
+  --known-sites BQSR/Homo_sapiens_assembly38.dbsnp138.vcf \
+  --known-sites BQSR/Homo_sapiens_assembly38.known_indels.vcf.gz \
+  --known-sites BQSR/Mills_and_1000G_gold_standard.indels.hg38.vcf.gz
+
+java -Xms2G -Xmx2G -jar $GATK_JAR ApplyBQSR \
+  -I aligned_EC25_markdup.bam \
+  -R $reference \
+  --bqsr-recal-file aligned_EC25_markdup_bqsr.report \
+  -O aligned_EC25_markdup_bqsr.bam
+```
+
+## Quality Control
+
+[samtools stats](https://www.htslib.org/doc/samtools.html) collects statistics from CRAM files and outputs in a text format.
+[Mosdepth](https://github.com/brentp/mosdepth) reports information for the evaluation of the quality of the provided alignment data. In short, the basic statistics of the alignment (number of reads, coverage, GC-content, etc.) are summarized and a number of useful graphs are produced.
+[MultiQC](http://multiqc.info/) is a visualization tool that generates a single HTML report summarizing all samples in your project.
+
