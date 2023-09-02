@@ -23,7 +23,7 @@
 <meta name="author" content="Marc Henein and Zachary Sentell" />
 
 
-<meta name="date" content="2023-08-18" />
+<meta name="date" content="2023-09-01" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -52,6 +52,8 @@
 <link href="libs/anchor-sections-1.1.0/anchor-sections.css" rel="stylesheet" />
 <link href="libs/anchor-sections-1.1.0/anchor-sections-hash.css" rel="stylesheet" />
 <script src="libs/anchor-sections-1.1.0/anchor-sections.js"></script>
+<link href="libs/pagedtable-1.1/css/pagedtable.css" rel="stylesheet" />
+<script src="libs/pagedtable-1.1/js/pagedtable.js"></script>
 
 
 <style type="text/css">
@@ -162,18 +164,21 @@ div.csl-indent {
 <li><a href="./">Whole Exome Sequencing Platform</a></li>
 <li class="divider"></li>
 <li class="chapter" data-level="1" data-path="index.html"><a href="index.html"><i class="fa fa-check"></i><b>1</b> Overview</a></li>
-<li class="chapter" data-level="2" data-path="align.html"><a href="align.html"><i class="fa fa-check"></i><b>2</b> Alignment</a>
+<li class="chapter" data-level="2" data-path="align.html"><a href="align.html"><i class="fa fa-check"></i><b>2</b> Pre-processing</a>
 <ul>
-<li class="chapter" data-level="2.1" data-path="align.html"><a href="align.html#pre-processing"><i class="fa fa-check"></i><b>2.1</b> Pre-processing</a></li>
-<li class="chapter" data-level="2.2" data-path="align.html"><a href="align.html#mark-duplicates"><i class="fa fa-check"></i><b>2.2</b> Mark Duplicates</a></li>
-<li class="chapter" data-level="2.3" data-path="align.html"><a href="align.html#base-quality-score-recalibration"><i class="fa fa-check"></i><b>2.3</b> Base Quality Score Recalibration</a></li>
-<li class="chapter" data-level="2.4" data-path="align.html"><a href="align.html#quality-control"><i class="fa fa-check"></i><b>2.4</b> Quality Control</a></li>
+<li class="chapter" data-level="2.1" data-path="align.html"><a href="align.html#sarek-pipeline"><i class="fa fa-check"></i><b>2.1</b> Sarek Pipeline</a></li>
+<li class="chapter" data-level="2.2" data-path="align.html"><a href="align.html#quality-control-of-raw-reads"><i class="fa fa-check"></i><b>2.2</b> Quality Control of Raw Reads</a></li>
+<li class="chapter" data-level="2.3" data-path="align.html"><a href="align.html#alignment"><i class="fa fa-check"></i><b>2.3</b> Alignment</a></li>
+<li class="chapter" data-level="2.4" data-path="align.html"><a href="align.html#mark-duplicates"><i class="fa fa-check"></i><b>2.4</b> Mark Duplicates</a></li>
+<li class="chapter" data-level="2.5" data-path="align.html"><a href="align.html#base-quality-score-recalibration"><i class="fa fa-check"></i><b>2.5</b> Base Quality Score Recalibration</a></li>
+<li class="chapter" data-level="2.6" data-path="align.html"><a href="align.html#quality-control-of-alignment"><i class="fa fa-check"></i><b>2.6</b> Quality Control of Alignment</a></li>
 </ul></li>
 <li class="chapter" data-level="3" data-path="calling.html"><a href="calling.html"><i class="fa fa-check"></i><b>3</b> Variant Calling</a>
 <ul>
 <li class="chapter" data-level="3.1" data-path="calling.html"><a href="calling.html#snvindel-calling"><i class="fa fa-check"></i><b>3.1</b> SNV/Indel Calling</a></li>
 <li class="chapter" data-level="3.2" data-path="calling.html"><a href="calling.html#variant-filtration"><i class="fa fa-check"></i><b>3.2</b> Variant Filtration</a></li>
 <li class="chapter" data-level="3.3" data-path="calling.html"><a href="calling.html#genotype-posteriors"><i class="fa fa-check"></i><b>3.3</b> Genotype Posteriors</a></li>
+<li class="chapter" data-level="3.4" data-path="calling.html"><a href="calling.html#benchmarking"><i class="fa fa-check"></i><b>3.4</b> Benchmarking</a></li>
 </ul></li>
 <li class="chapter" data-level="4" data-path="statistical-genetics.html"><a href="statistical-genetics.html"><i class="fa fa-check"></i><b>4</b> Statistical Genetics</a>
 <ul>
@@ -214,16 +219,19 @@ div.csl-indent {
 <div id="header">
 <h1 class="title">Whole Exome Sequencing Platform</h1>
 <p class="author"><em>Marc Henein and Zachary Sentell</em></p>
-<p class="date"><em>2023-08-18</em></p>
+<p class="date"><em>2023-09-01</em></p>
 </div>
 <div id="overview" class="section level1 hasAnchor" number="1">
 <h1><span class="header-section-number">1</span> Overview<a href="index.html#overview" class="anchor-section" aria-label="Anchor link to header"></a></h1>
-<p>We run the pipeline on the Compute Canada servers. Pre-processing steps will be executed with the Sarek pipeline from nf-core <span class="citation">(<a href="references.html#ref-ewels2020nf" role="doc-biblioref">Ewels et al. 2020</a>)</span>.</p>
+<p>This is a pipeline for whole exome sequencing analysis to identify the genetic causes of Mendelian disorders. It was assembled in the Kitzler lab at the McGill University Health Centre and run on the Compute Canada servers. It includes the following steps:</p>
 <ol style="list-style-type: decimal">
-<li>Raw sequence pre-processing and alignment.</li>
+<li>Pre-processing of raw reads.</li>
 <li>Germline variant calling for SNVs and indels.</li>
+<li>Estimation of kinship coefficients to verify pedigree relationships.</li>
 <li>Variant annotation and trio analysis to identify disease-causing variants.</li>
 </ol>
+<p>We follow <a href="https://gatk.broadinstitute.org/hc/en-us/sections/360007226651-Best-Practices-Workflows">GATK best practices</a> for pre-processing and variant calling. We execute pre-processing steps with the <a href="https://nf-co.re/sarek/3.2.3">nf-core/sarek pipeline</a>. We use <a href="https://whatshap.readthedocs.io/en/latest/">WhatsHap</a> to phase variants and <a href="https://openmendel.github.io/">OpenMendel</a> and <a href="https://zzz.bwh.harvard.edu/plink/">PLINK</a> to estimate kinship coefficients. We use Ensembl VEP to annotate variants. We provide <em>R</em> scripts to identify phased compound heterozygous variants as well as <em>de novo</em>, homozygous and unphased compound heterozygous variants. We output the results to Excel in a readable format.</p>
+<p>We illustrate the expected output and benchmark the pipeline using Illumina paired-end WES data from the <a href="https://www.nist.gov/programs-projects/genome-bottle">GIAB</a> Ashkenazi Jewish reference trio (<a href="https://www.ncbi.nlm.nih.gov/sra/?term=SRR2962669">SRR2962669</a>, <a href="https://www.ncbi.nlm.nih.gov/sra/?term=SRR2962692">SRR2962692</a>, <a href="https://www.ncbi.nlm.nih.gov/sra/?term=SRR2962694">SRR2962694</a>).</p>
 
 </div>
             </section>

@@ -1,8 +1,8 @@
 # Summary
 
-Output the results of the analysis to an Excel workbook with seperate sheets for de novo, homozygous, unphased compound hetorygous and phased compound heterozygous variants. For compound heterozygous variants, highlight variants in the same transcript with a single colour for ease of viewing.
+We ouput the results of the analysis to an Excel workbook with seperate sheets for de novo, homozygous, unphased compound hetorygous and phased compound heterozygous variants. We highlight variants in the same transcript with a single colour for ease of viewing.
 
-```{r eval=FALSE}
+```{r, warning=FALSE, message=FALSE}
 library(openxlsx)
 
 names <- c("de_novo", "de_novo_gq>=30","homozygote","unphased_compound_heterozygote","phased_compound_heterozygote","chrX","ukpanelapp_green","aupanelapp","all_variants")
@@ -10,7 +10,7 @@ tables <- c("prob_novo","prob_novo_high_qual","prob_hom","prob_2plus_het2","prob
 sheets <- data_frame(names,tables)
 
 wb <- createWorkbook()
-negStyle <- createStyle(fontColour = "#9C0006", bgFill = "#FFC7CE")
+negStyle <- createStyle(fontColour = "#215967", bgFill = "#B7DEE8")
 posStyle <- createStyle(fontColour = "#006100", bgFill = "#C6EFCE")
 
 for (i in 1:nrow(sheets)) {
@@ -31,5 +31,5 @@ for (i in 1:nrow(sheets)) {
   conditionalFormatting(wb, sheets$names[i], cols = 1:ncol(table), rows = 1:(nrow(table)+1), rule = rule_even, style = posStyle)
 }
 
-saveWorkbook(wb, "pedigree_results_08_07_23.xlsx", overwrite = TRUE)
+saveWorkbook(wb, "result/AJ_pedigree_results_09_01_23.xlsx", overwrite = TRUE)
 ```

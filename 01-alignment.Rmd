@@ -1,72 +1,108 @@
-# Alignment {#align}
+# Pre-processing {#align}
 
-Based on [GATK best practices](https://gatk.broadinstitute.org/hc/en-us/articles/360035535912-Data-pre-processing-for-variant-discovery).
+## Sarek Pipeline
 
-## Pre-processing
-Data processing will start with either FASTQ files directly from the sequencer, or pre-processed BAM files of raw sequence data that has been aligned to the reference genome.
-Quality control of raw reads with [FastQC](http://www.bioinformatics.babraham.ac.uk/projects/fastqc/), a quality control tool for high throughput sequence data, written by Simon Andrews at the Babraham Institute in Cambridge.
+We execute the raw read pre-processing with the Sarek pipeline using Nextflow.
 
 ```{bash eval=FALSE}
-module load fastqc
+module load nextflow/23.04.3
+exome=sureselectV5_padded_hg38.bed
+nextflow run nf-core-sarek-3.1.2/workflow \
+-profile singularity,beluga --input ./samplesheet_ec.csv --outdir ./results \
+--genome GATK.GRCh38 --intervals $exome \
+--wes --nucleotides_per_second 1000 --save_reference --save_output_as_bam --save_mapped
 ```
 
-Trimming raw reads with [fastp](https://github.com/OpenGene/fastp), an ultra-fast all-in-one FASTQ preprocessor.
-Mapping reads to GRCh38 reference genome with BWA-MEM algorithm.
-Convert SAM to BAM with samtools.
+In the following we describe the tools that the command calls with their associated scripts.
+
+## Quality Control of Raw Reads
+
+We obtain an overview of the quality of the raw reads with [FastQC](http://www.bioinformatics.babraham.ac.uk/projects/fastqc/).
 
 ```{bash eval=FALSE}
-module load fastp
-module load bwa mem
-module load samtools
-export reference=$MUGQIC_INSTALL_HOME/genomes/species/Homo_sapiens.GRCh38/genome/bwa_index/Homo_sapiens.GRCh38.fa
+module load fastqc/0.11.9
+fastqc -t 6 AJ_GIAB_fastq/HG002_1.fastq AJ_GIAB_fastq/HG002_2.fastq
+```
 
-fastp -i EC25_1.fq.gz -I EC25_2.fq.gz \
+![FastQC Report for HG002 paired end R1.](images/fastqc.png)
+
+## Alignment
+
+We trim raw reads with [fastp](https://github.com/OpenGene/fastp), then map reads to the GRCh38 reference genome with the BWA-MEM algorithm and convert SAM to BAM with samtools.
+
+```{bash eval=FALSE}
+module load fastp/0.23.4
+module load bwa
+module load samtools
+export reference=$MUGQIC_INSTALL_HOME/genomes/species/Homo_sapiens.GRCh38/
+id=""
+sm="HG002"
+genome/bwa_index/Homo_sapiens.GRCh38.fa
+fastp -i HG002_1.fq.gz -I HG002_2.fq.gz \
     --stdout --thread 2 \
-    -j "fastp-EC25.json" \
-    -h "fastp-EC25.html" \
-    2> "fastp-EC25.log" \
+    -j "fastp-HG002.json" \
+    -h "fastp-HG002.html" \
+    2> "fastp-HG002.log" \
 | bwa mem -v 2 -M -t 32 -p \
-    $reference - 2> "bwa-EC25.log" \
+    -R "@RG\tID:$id\tPL:ILLUMINA\tLB:$id"_"$sm\tSM:$sm" \
+    $reference - 2> "bwa-HG002.log" \
 | samtools view -@ 16 \
     -O BAM \
-    -o "aligned_EC25.bam" \
-    2> "samtools-EC25.log"
+    -o "aligned_HG002.bam" \
+    2> "samtools-HG002.log"
 ```
 
 ## Mark Duplicates
 
-Identify read pairs that are likely to have originated from duplicates of the same DNA fragment with GATK MarkDuplicates.
+We identify read pairs that are likely to have originated from duplicates of the same DNA fragment with GATK MarkDuplicates.
 
 ```{bash eval=FALSE}
+export GATK_JAR=/cvmfs/soft.mugqic/CentOS6/software/GenomeAnalysisTK/GenomeAnalysisTK-4.1.8.1/gatk-package-4.1.8.1-local.jar
 java -Xms60G -Xmx60G -jar $GATK_JAR MarkDuplicatesSpark \
-  -I aligned_EC25.bam \
-  -O aligned_EC25_markdup.bam \
+  -I aligned_HG002.bam \
+  -O aligned_HG002_markdup.bam \
   --spark-master local[12]
 ```
 
 ## Base Quality Score Recalibration
 
-[GATK BaseRecalibrator](https://gatk.broadinstitute.org/hc/en-us/articles/360042477672-BaseRecalibrator) generates a recalibration table based on various covariates, i.e., read group, reported quality score, machine cycle, and nucleotide context. [GATK ApplyBQSR](https://gatk.broadinstitute.org/hc/en-us/articles/5358826654875-ApplyBQSR) recalibrates the base qualities of the input reads based on the recalibration table.
+We use BQSR to recalibrate the base quality of reads based on on various covariates, i.e., read group, reported quality score, machine cycle, and nucleotide context.
 
 ```{bash eval=FALSE}
 java -Xms4G -Xmx4G -jar $GATK_JAR BaseRecalibrator \
-  -I aligned_EC25_markdup.bam \
+  -I aligned_HG002_markdup.bam \
   -R $reference \
-  -O aligned_EC25_markdup_bqsr.report \
+  -O aligned_HG002_markdup_bqsr.report \
   --known-sites BQSR/Homo_sapiens_assembly38.dbsnp138.vcf \
   --known-sites BQSR/Homo_sapiens_assembly38.known_indels.vcf.gz \
   --known-sites BQSR/Mills_and_1000G_gold_standard.indels.hg38.vcf.gz
 
 java -Xms2G -Xmx2G -jar $GATK_JAR ApplyBQSR \
-  -I aligned_EC25_markdup.bam \
+  -I aligned_HG002_markdup.bam \
   -R $reference \
-  --bqsr-recal-file aligned_EC25_markdup_bqsr.report \
-  -O aligned_EC25_markdup_bqsr.bam
+  --bqsr-recal-file aligned_HG002_markdup_bqsr.report \
+  -O aligned_HG002_markdup_bqsr.bam
 ```
 
-## Quality Control
+## Quality Control of Alignment
 
-[samtools stats](https://www.htslib.org/doc/samtools.html) collects statistics from CRAM files and outputs in a text format.
-[Mosdepth](https://github.com/brentp/mosdepth) reports information for the evaluation of the quality of the provided alignment data. In short, the basic statistics of the alignment (number of reads, coverage, GC-content, etc.) are summarized and a number of useful graphs are produced.
-[MultiQC](http://multiqc.info/) is a visualization tool that generates a single HTML report summarizing all samples in your project.
+[samtools stats](https://www.htslib.org/doc/samtools.html) collects statistics from BAM files and outputs in a text format.
+
+```{bash eval=FALSE}
+samtools stats aligned_HG002_markdup_bqsr.bam > aligned_HG002_markdup_bqsr_stats.txt
+```
+
+[Mosdepth](https://github.com/brentp/mosdepth) summarizes basic statistics of the alignment (number of reads, coverage, GC-content, etc.) and produces a number of useful graphs.
+
+```{bash eval=FALSE}
+module load mugqic/mosdepth/0.3.4
+mosdepth --by $exome HG002_mosdepth_output aligned_HG002_markdup_bqsr.bam
+```
+
+[MultiQC](http://multiqc.info/) generates a single HTML report summarizing all samples in the project.
+
+```{bash eval=FALSE}
+module load multiqc
+multiqc .
+```
 

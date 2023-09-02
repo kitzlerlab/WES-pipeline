@@ -23,7 +23,7 @@
 <meta name="author" content="Marc Henein and Zachary Sentell" />
 
 
-<meta name="date" content="2023-08-18" />
+<meta name="date" content="2023-09-01" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -52,6 +52,8 @@
 <link href="libs/anchor-sections-1.1.0/anchor-sections.css" rel="stylesheet" />
 <link href="libs/anchor-sections-1.1.0/anchor-sections-hash.css" rel="stylesheet" />
 <script src="libs/anchor-sections-1.1.0/anchor-sections.js"></script>
+<link href="libs/pagedtable-1.1/css/pagedtable.css" rel="stylesheet" />
+<script src="libs/pagedtable-1.1/js/pagedtable.js"></script>
 
 
 <style type="text/css">
@@ -162,18 +164,21 @@ div.csl-indent {
 <li><a href="./">Whole Exome Sequencing Platform</a></li>
 <li class="divider"></li>
 <li class="chapter" data-level="1" data-path="index.html"><a href="index.html"><i class="fa fa-check"></i><b>1</b> Overview</a></li>
-<li class="chapter" data-level="2" data-path="align.html"><a href="align.html"><i class="fa fa-check"></i><b>2</b> Alignment</a>
+<li class="chapter" data-level="2" data-path="align.html"><a href="align.html"><i class="fa fa-check"></i><b>2</b> Pre-processing</a>
 <ul>
-<li class="chapter" data-level="2.1" data-path="align.html"><a href="align.html#pre-processing"><i class="fa fa-check"></i><b>2.1</b> Pre-processing</a></li>
-<li class="chapter" data-level="2.2" data-path="align.html"><a href="align.html#mark-duplicates"><i class="fa fa-check"></i><b>2.2</b> Mark Duplicates</a></li>
-<li class="chapter" data-level="2.3" data-path="align.html"><a href="align.html#base-quality-score-recalibration"><i class="fa fa-check"></i><b>2.3</b> Base Quality Score Recalibration</a></li>
-<li class="chapter" data-level="2.4" data-path="align.html"><a href="align.html#quality-control"><i class="fa fa-check"></i><b>2.4</b> Quality Control</a></li>
+<li class="chapter" data-level="2.1" data-path="align.html"><a href="align.html#sarek-pipeline"><i class="fa fa-check"></i><b>2.1</b> Sarek Pipeline</a></li>
+<li class="chapter" data-level="2.2" data-path="align.html"><a href="align.html#quality-control-of-raw-reads"><i class="fa fa-check"></i><b>2.2</b> Quality Control of Raw Reads</a></li>
+<li class="chapter" data-level="2.3" data-path="align.html"><a href="align.html#alignment"><i class="fa fa-check"></i><b>2.3</b> Alignment</a></li>
+<li class="chapter" data-level="2.4" data-path="align.html"><a href="align.html#mark-duplicates"><i class="fa fa-check"></i><b>2.4</b> Mark Duplicates</a></li>
+<li class="chapter" data-level="2.5" data-path="align.html"><a href="align.html#base-quality-score-recalibration"><i class="fa fa-check"></i><b>2.5</b> Base Quality Score Recalibration</a></li>
+<li class="chapter" data-level="2.6" data-path="align.html"><a href="align.html#quality-control-of-alignment"><i class="fa fa-check"></i><b>2.6</b> Quality Control of Alignment</a></li>
 </ul></li>
 <li class="chapter" data-level="3" data-path="calling.html"><a href="calling.html"><i class="fa fa-check"></i><b>3</b> Variant Calling</a>
 <ul>
 <li class="chapter" data-level="3.1" data-path="calling.html"><a href="calling.html#snvindel-calling"><i class="fa fa-check"></i><b>3.1</b> SNV/Indel Calling</a></li>
 <li class="chapter" data-level="3.2" data-path="calling.html"><a href="calling.html#variant-filtration"><i class="fa fa-check"></i><b>3.2</b> Variant Filtration</a></li>
 <li class="chapter" data-level="3.3" data-path="calling.html"><a href="calling.html#genotype-posteriors"><i class="fa fa-check"></i><b>3.3</b> Genotype Posteriors</a></li>
+<li class="chapter" data-level="3.4" data-path="calling.html"><a href="calling.html#benchmarking"><i class="fa fa-check"></i><b>3.4</b> Benchmarking</a></li>
 </ul></li>
 <li class="chapter" data-level="4" data-path="statistical-genetics.html"><a href="statistical-genetics.html"><i class="fa fa-check"></i><b>4</b> Statistical Genetics</a>
 <ul>
@@ -215,8 +220,8 @@ div.csl-indent {
 <h1>References<a href="references.html#references" class="anchor-section" aria-label="Anchor link to header"></a></h1>
 
 <div id="refs" class="references csl-bib-body hanging-indent">
-<div id="ref-ewels2020nf" class="csl-entry">
-Ewels, Philip A, Alexander Peltzer, Sven Fillinger, Harshil Patel, Johannes Alneberg, Andreas Wilm, Maxime Ulysse Garcia, Paolo Di Tommaso, and Sven Nahnsen. 2020. <span>“The Nf-Core Framework for Community-Curated Bioinformatics Pipelines.”</span> <em>Nature Biotechnology</em> 38 (3): 276–78.
+<div id="ref-lange2002mathematical" class="csl-entry">
+Lange, Kenneth. 2002. <em>Mathematical and Statistical Methods for Genetic Analysis</em>. Vol. 488. Springer.
 </div>
 </div>
 </div>

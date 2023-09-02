@@ -2,7 +2,7 @@
 
 ## Phasing
 
-WhatsHap phases genotypes in a pedigree using the Mendelian transmission rules and physical phasing based on reads that span two or more heterozygous variants.
+We use WhatsHap to phase genotypes in a pedigree using the Mendelian transmission rules and physical phasing based on reads that span two or more heterozygous variants.
 
 ```{bash eval=FALSE}
 whatshap phase --ped pedigree.ped \
@@ -13,7 +13,7 @@ aligned_HG002.bam aligned_HG003.bam aligned_HG004.bam \
 
 ## Kinship
 
-We seek to confirm pedigrees and identify hidden relatedness between samples. We first select SNPs in approximate linkage equilibrium with Linkdatagen based on the genetic linkage map of HapMap SNPs. Linkdatagen also eliminates Mendelian inconsitencies in the data.
+We seek to verify pedigree relationships and identify hidden relatedness between samples. We first select SNPs in approximate linkage equilibrium with [Linkdatagen](https://bioinf.wehi.edu.au/software/linkdatagen/) based on the genetic linkage map of HapMap SNPs. Linkdatagen also eliminates Mendelian inconsitencies in the data.
 
 ```{bash eval=FALSE}
 perl vcf2linkdatagen.pl \
@@ -45,13 +45,13 @@ freq_pl <- map %>% left_join(ord, by = "SNP") %>%
 write_delim(freq_pl, "freq_pl.frq", delim = " ")
 ```
 
-Alternatively, with a sufficient number of samples, we can estimate the linkage disequilibrium between alleles and remove correlated SNPs.
+Alternatively, with a sufficient number of samples, we can estimate the linkage disequilibrium between alleles and remove correlated SNPs using PLINK.
 
 ```{bash eval=FALSE}
 plink --file data --indep 50 5 2
 ```
 
-We then calculate the empirical kinship coefficient by estimating identity by descent using identity by state and allele frequencies. We run this calculation in PLINK.
+We then calculate the empirical kinship coefficient by estimating identity by descent using identity by state and allele frequencies [@lange2002mathematical]. We run this calculation in PLINK.
 
 ```{bash eval=FALSE}
 plink --file plink --genome --read-freq freq_pl.frq
@@ -66,29 +66,25 @@ Kinship("control_compare.txt")
 
 ## Runs of Homozygosity
 
-HomozygosityMapper <https://www.homozygositymapper.org/>, PLINK
+If we suspect some degree of consanguinity, we may look for a homozygous pathogenic variant in runs of homozygosity using [AutozygosityMapper](https://teufelsberg.charite.de/AutozygosityMapper/).
 
 ## Linkage Analysis
 
-Linkdatagen, PBAP, MORGAN, MERLIN, Allegro, OpenMendel, Pedminer
+Using the same set of SNPs in linkage equillibrium, we can run linkage analysis on appropriately chosen pedigrees using OpenMendel for two-point linkage or multipoint linkage analysis.
 
 ```{bash eval=FALSE}
-perl linkdatagen.pl \
--data m -pedfile MyPed.ped \
--whichSamplesFile MyWS.ws \
--callFile MySNPs.brlmm \
--annotFile annotHapMap2U.txt \
--pop CEU -binsize 0.3 \
--MendelErrors removeSNPs -prog me \
--outputDir MyPed_HapMap2 > MyPed_HapMap2_me.out
-```
+# Two-point linkage analysis
+using MendelTwoPointLinkage, CSV
+TwoPointLinkage("Control_file.txt")
 
-Two-point linkage
-Multipoint linkage
+# Multipoint linkage analysis
+using MendelLocationScores, CSV
+LocationScores("Control_file.txt")
+```
 
 ## Population Substructure
 
-Given a large population sample, we cluster individuals by degree of identity by state using PLINK in order to identify subgroups with shared ancestry.
+Given a large number of samples from a population, we cluster individuals by degree of identity by state using PLINK in order to identify subgroups with shared ancestry.
 
 ```{bash eval=FALSE}
 plink --file mydata --cluster

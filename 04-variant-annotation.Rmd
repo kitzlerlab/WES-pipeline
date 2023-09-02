@@ -1,6 +1,6 @@
 # Variant Annotation
 
-Annotate the variants with VEP for molecular consequence, allele frequency and a set of pathogenicity prediction tools.
+We annotate the variants with VEP for molecular consequence, allele frequency, clinical variant databases, i.e. Clinvar, Mastermind, and a set of pathogenicity prediction tools, i.e., CADD, PrimateAI, SpliceAI, EVE, MutationTaster, REVEL.
 
 ```{bash eval=FALSE}
 apptainer exec -B vep_data:/opt/vep/.vep vep.sif /opt/vep/src/ensembl-vep/vep \
@@ -36,7 +36,7 @@ apptainer exec -B vep_data:/opt/vep/.vep vep.sif /opt/vep/src/ensembl-vep/vep \
 
 ## Filtration
 
-Perform a first round of filtering with VEP to reduce the size of the VCF to be loaded into R. In particular, select variants with high or moderate impact and an allele frequency smaller than 0.05.
+We perform a first round of filtering with VEP to reduce the size of the VCF to be loaded into R. In particular, we select variants with high or moderate impact and a gnomAD exome allele frequency smaller than 0.05.
 
 ```{bash eval=FALSE}
 apptainer exec -B vep_data:/opt/vep/.vep vep.sif /opt/vep/src/ensembl-vep/filter_vep \
@@ -47,21 +47,20 @@ apptainer exec -B vep_data:/opt/vep/.vep vep.sif /opt/vep/src/ensembl-vep/filter
 --format tab 
 ```
 
-Load the WhatsHap phased variants into R and select autosomal variants.
+We load the phased variants into R and select autosomal variants that have passed all variant calling filters.
 
-```{r eval=FALSE}
+```{r, message=FALSE, warning=FALSE}
 library(tidyverse)
 library(VariantAnnotation)
-
-mother = "EC25"
-father = "EC26"
-proband = "EC27"
-
-wh <- readVcf("phased_whatshap_refined.vcf", "hg38")
+# Set sample names
+mother = "HG004"
+father = "HG003"
+proband = "HG002"
+# Load WhatsHap phased variants
+wh <- readVcf("data/AJ_phased_whatshap_refined.vcf", "hg38")
 wh <- expand(wh)
-pos <- rowRanges(wh)
-pos2 <- as.data.frame(pos) %>% as_tibble 
-
+# Variant info
+pos <- rowRanges(wh) %>% as.data.frame() %>% as_tibble()
 # Genotype
 wh_geno <- geno(wh)$GT %>% as_tibble() %>% 
   dplyr::rename("mother"= sym(mother), "father"= sym(father), "proband"= sym(proband))
@@ -71,15 +70,18 @@ wh_ps <- geno(wh)$PS %>% as_tibble() %>%
 # Genotype quality
 wh_gq <- geno(wh)$GQ %>% as_tibble() %>% 
   dplyr::rename("GQ_mother" = sym(mother), "GQ_father"= sym(father), "GQ_proband"= sym(proband))
-# Join genotype, phasing block and genotype quality
-wh_geno0 <- bind_cols(pos2,wh_geno,wh_gq,wh_ps)
-
+# Allelic depth
+wh_ad <- geno(wh)$AD %>% as_tibble() %>% 
+  dplyr::rename("AD_ref_mother" = paste0(sym(mother),".1"), "AD_ref_father"= paste0(sym(father),".1"), "AD_ref_proband"= paste0(sym(proband),".1")) %>%
+  dplyr::rename("AD_alt_mother" = paste0(sym(mother),".2"), "AD_alt_father"= paste0(sym(father),".2"), "AD_alt_proband"= paste0(sym(proband),".2"))
+# Join variant info, genotype, phasing block, genotype quality and allelic depth
+wh_geno0 <- bind_cols(pos,wh_geno,wh_gq,wh_ps,wh_ad)
 # Identify alternate alleles with number
 wh_geno01 <- wh_geno0 %>% 
   group_by(seqnames,start,end,width,REF) %>% 
   mutate(counter = row_number()) %>%
-  ungroup()
-
+  ungroup() %>%
+  dplyr::filter(FILTER=="PASS")
 # Convert variant formatting to VEP format. Add 1 to indel start site.
 wh_geno01 <- wh_geno01 %>% 
   mutate(Location = ifelse(
@@ -88,27 +90,29 @@ wh_geno01 <- wh_geno01 %>%
         start+1==end, paste0(seqnames,":",start+1), paste0(seqnames,":",start+1,"-",end)))) %>% 
   mutate(Allele = ifelse(substr(REF,1,1)==substr(ALT,1,1), substr(ALT,2,nchar(ALT)), ALT))
 wh_geno01$Allele[wh_geno01$Allele==""] <- "-"
-
 # Overlapping deletions
 wh_geno_overlap <- wh_geno01 %>% dplyr::filter(ALT=="")
 wh_geno1 <- wh_geno01 %>% dplyr::filter(ALT!="")
-wh_geno1 <- wh_geno1[c(21,22,11:19,20)]
-
+# Select columns
+wh_geno1 <- wh_geno1[c(27,28,11:25,26)]
 # Select X chromosome
 wh_geno_X <- wh_geno1 %>% dplyr::filter(str_detect(Location,"chrX"))
-
 # Select autosomal variants
 wh_geno_auto <- wh_geno1 %>%
   dplyr::filter(!str_detect(Location,"chrX")) %>% 
   dplyr::filter(!str_detect(Location,"chrY")) %>%
   dplyr::filter(!str_detect(Location,"M"))
-wh_geno_auto
 ```
 
-Manually remove the hashtag before the line of column titles in ensembl_ann_vep_filt.txt. Load the filtered variants into R. Select variants with an allele frequency \<0.01 that fall in RefSeq transcripts.
+```{r echo=FALSE}
+library(rmarkdown)
+paged_table(head(wh_geno_auto))
+```
 
-```{r eval=FALSE}
-result <- read_table("ensembl_ann_vep_filt_refined_08_07_23.txt", comment = "#", na="-", col_types = list(
+Manually remove the hashtag before the line of column titles in ensembl_ann_vep_filt.txt. We load the VEP annotated variants into R and select variants with an allele frequency \<0.01 that fall in RefSeq transcripts.
+
+```{r, message=FALSE, warning=FALSE}
+result <- read_table("data/AJ_ensembl_ann_vep_filt_09_01_23.txt", comment = "#", na="-", col_types = list(
   Uploaded_variation= col_factor(), Gene=col_factor(), Feature=col_factor(), MANE_PLUS_CLINICAL = col_character(), 
   MOTIF_NAME = col_character(), HIGH_INF_POS = col_character(), TRANSCRIPTION_FACTORS = col_character(), 
   PUBMED=col_character(), MOTIF_POS = col_character()))
@@ -122,21 +126,18 @@ refseq0 <- result1 %>%
   select_if(~any(!is.na(.)))
 ```
 
-Add gene-level information.
+We add gene-level information from OMIM, Human Phenotype Ontology, ClinGen, GenCC, Orphanet.
 
-```{r eval=FALSE}
+```{r, message=FALSE, warning=FALSE}
 library(ontologyIndex)
-
 # OMIM
-omim <- read_tsv("~/Documents/kidney_panel/omim/genemap2_edit.txt", name_repair="universal", col_types=list(Entrez.Gene.ID = col_factor())) %>% 
+omim <- read_tsv("data/genemap2_edit.txt", name_repair="universal", col_types=list(Entrez.Gene.ID = col_factor())) %>% 
   dplyr::rename(OMIM_Phenotypes = Phenotypes) %>% 
   dplyr::select(Entrez.Gene.ID,OMIM_Phenotypes)
-
 # Human Phenotype Ontology
-hpo_data <- read_tsv("~/Documents/kidney_panel/genes_to_phenotype.txt", col_types=list(entrez_gene_id = col_factor()))
-hpo <- get_ontology(file = '~/Documents/kidney_panel/hp_obo.txt', propagate_relationships = "is_a", extract_tags = "minimal")
+hpo_data <- read_tsv("data/genes_to_phenotype.txt", col_types=list(entrez_gene_id = col_factor()))
+hpo <- get_ontology(file = 'data/hp_obo.txt', propagate_relationships = "is_a", extract_tags = "minimal")
 hpo_kidney <- get_descendants(hpo, roots="HP:0000077") #Abnormality of the kidney
-
 gen_hpo_kidney <- hpo_data %>% 
   dplyr::filter(hpo_term_id %in% hpo_kidney) %>% 
   dplyr::arrange(frequency_hpo) %>% 
@@ -147,26 +148,22 @@ gen_hpo_kidney <- hpo_data %>%
   unite("renal_hpo_term", c(hpo_term_name, frequency), remove = FALSE, sep = "") %>% 
   dplyr::group_by(entrez_gene_id) %>% 
   dplyr::summarise(renal_hpo_term = toString(unique(renal_hpo_term)))
-
 gen_hpo_extra <- hpo_data %>% 
   dplyr::filter(frequency_hpo %in% c("HP:0040281", "HP:0040280")) %>%
   dplyr::arrange(frequency_hpo) %>%
   dplyr::filter(!(hpo_term_id %in% hpo_kidney)) %>% 
   dplyr::group_by(entrez_gene_id) %>% 
   dplyr::summarise(extrarenal_hpo_term = toString(unique(hpo_term_name)))
-
 # ClinGen 
-clingen <- read_csv("~/Documents/kidney_panel/Clingen-Curation.csv", skip = 3) %>% 
+clingen <- read_csv("data/Clingen-Curation.csv", skip = 3) %>% 
   dplyr::mutate(assertion=gsub("\\s*\\([^\\)]+\\)","", gene_disease_validity_assertion_classifications)) %>%
   dplyr::mutate(assertion=paste("(",assertion,")",sep="")) %>%
   dplyr::mutate(assertion=if_else(assertion=="(NA)",NA,assertion)) %>%
   unite("disease", c(disease_label, assertion), remove = FALSE, na.rm=TRUE, sep = " ") %>%
   dplyr::group_by(hgnc_id) %>% 
   dplyr::summarise(clingen_disease_label = paste(disease,collapse="; "))
-
 # GenCC including Orphanet data
-gencc <- read_tsv("~/Documents/kidney_panel/gencc-submissions.tsv")
-
+gencc <- read_tsv("data/gencc-submissions.tsv")
 gencc_def <- gencc %>% 
   dplyr::filter(submitter_title != "Orphanet") %>% 
   dplyr::filter(classification_title == "Definitive") %>% 
@@ -180,7 +177,6 @@ gencc_def <- gencc %>%
   dplyr::select(gene_curie, gencc_disease_definitive) %>% 
   dplyr::group_by(gene_curie) %>% 
   dplyr::summarise(gencc_disease_definitive = paste(unique(gencc_disease_definitive), collapse="; "))
-
 gencc_strong <- gencc %>% 
   dplyr::filter(submitter_title != "Orphanet") %>% 
   dplyr::filter(classification_title == "Strong") %>% 
@@ -194,12 +190,10 @@ gencc_strong <- gencc %>%
   dplyr::select(gene_curie, gencc_disease_strong) %>% 
   dplyr::group_by(gene_curie) %>% 
   dplyr::summarise(gencc_disease_strong = paste(unique(gencc_disease_strong), collapse="; "))
-
 orphanet <- gencc %>% 
   dplyr::filter(submitter_title == "Orphanet") %>% 
   dplyr::group_by(gene_curie) %>% 
   dplyr::summarise(orphanet_disease = toString(disease_title), orphanet_moi = toString(unique(moi_title)))
-
 # Join
 refseq01 <- refseq0 %>% 
   left_join(omim, by=join_by(Gene==Entrez.Gene.ID)) %>%
@@ -208,21 +202,26 @@ refseq01 <- refseq0 %>%
   left_join(clingen, by=join_by(HGNC_ID==hgnc_id)) %>%
   left_join(gencc_def, by=join_by(HGNC_ID==gene_curie)) %>%
   left_join(gencc_strong, by=join_by(HGNC_ID==gene_curie)) %>%
-  left_join(orphanet, by=join_by(HGNC_ID==gene_curie))
-
+  left_join(orphanet, by=join_by(HGNC_ID==gene_curie)) %>%
+  dplyr::select(SYMBOL, Uploaded_variation, Location, Feature, HGVSc,	HGVSp, Consequence, ZYG, EXON,	INTRON,	gnomADe_AF,	gnomADg_AF,	MAX_AF, MAX_AF_POPS,	ClinVar,	ClinVar_CLNSIG,	OMIM_Phenotypes, renal_hpo_term, extrarenal_hpo_term,	REVEL,	SIFT,	PolyPhen,	CADD_PHRED,	PrimateAI,	SpliceAI_pred,	EVE_CLASS,	EVE_SCORE,	MutationTaster_pred,	MutationTaster_score,	orphanet_disease,	orphanet_moi,	Mastermind_MMID3,	Existing_variation,	PUBMED,	mother,	father,	proband, Allele,	counter, AD_ref_mother, AD_ref_father, AD_ref_proband,	AD_alt_mother, AD_alt_father, AD_alt_proband, GQ_mother,	GQ_father,	GQ_proband,	PS_mother,	PS_father,	PS_proband,	CANONICAL,	MANE_SELECT,	MANE_PLUS_CLINICAL,	IMPACT,	Gene, HGNC_ID, Amino_acids, Codons, AF,	AFR_AF,	AMR_AF,	EAS_AF,	EUR_AF,	SAS_AF,	gnomADe_AFR_AF,	gnomADe_AMR_AF,	gnomADe_ASJ_AF,	gnomADe_EAS_AF,	gnomADe_FIN_AF,	gnomADe_NFE_AF,	gnomADe_OTH_AF,	gnomADe_SAS_AF,	gnomADg_AFR_AF,	gnomADg_AMI_AF,	gnomADg_AMR_AF,	gnomADg_ASJ_AF,	gnomADg_EAS_AF,	gnomADg_FIN_AF,	gnomADg_MID_AF,	gnomADg_NFE_AF,	gnomADg_OTH_AF,	gnomADg_SAS_AF)
+# X chromosome
 refseq_X <- refseq01 %>% dplyr::filter(str_detect(Uploaded_variation,"X"))
+# Autosomal chromosomes
 refseq <- refseq01 %>%
   dplyr::filter(!str_detect(Uploaded_variation,"X")) %>% 
   dplyr::filter(!str_detect(Uploaded_variation,"Y")) %>% 
   dplyr::filter(!str_detect(Uploaded_variation,"M"))
-refseq
+```
+
+```{r echo=FALSE}
+paged_table(head(refseq))
 ```
 
 ## *De Novo* Variants
 
-Select *de novo* variants in the proband.
+We select *de novo* variants in the proband.
 
-```{r eval=FALSE}
+```{r}
 geno_novo_all <- wh_geno_auto %>% 
   dplyr::filter(! ( ( ( str_detect(mother, substr(proband,1,1)) | str_detect(mother, "\\.") ) & 
                  (str_detect(father, substr(proband,3,3)) | str_detect(father, "\\.") ) ) | 
@@ -232,12 +231,11 @@ geno_novo_all <- wh_geno_auto %>%
                   (str_detect(mother, substr(proband,1,1)) & str_detect(mother, substr(proband,3,3))) |
                   (str_detect(father, substr(proband,1,1)) & str_detect(father, substr(proband,3,3)))
                   )
-geno_novo_all
 ```
 
-Discard *de novo* mutations back to the reference allele (e.g. 1/1, 1/1 --\> 0/1) since they are unlikely to be pathogenic.
+We discard *de novo* mutations back to the reference allele (e.g. 1/1, 1/1 --\> 0/1) since they are unlikely to be pathogenic.
 
-```{r eval=FALSE}
+```{r}
 geno_novo_not_ref <- wh_geno_auto %>% 
   dplyr::filter(! ( ( ( str_detect(mother, substr(proband,1,1)) | str_detect(mother, "\\.") | substr(proband,1,1)==0 ) & 
                  (str_detect(father, substr(proband,3,3)) | str_detect(father, "\\.") | substr(proband,3,3)==0 ) ) | 
@@ -247,19 +245,21 @@ geno_novo_not_ref <- wh_geno_auto %>%
                   (str_detect(mother, substr(proband,1,1)) & str_detect(mother, substr(proband,3,3))) |
                   (str_detect(father, substr(proband,1,1)) & str_detect(father, substr(proband,3,3)))
                   )
-geno_novo_not_ref[c(1:5)]
 ```
 
-Increase the cutoff for genotype quality to ensure that the the *de novo* variants are not a result of incorrect variant calling. Set GQ>=30, i.e, the probability that the call is incorrect is =<0.1%.
+We increase the cutoff for genotype quality to ensure that the the *de novo* variants are not a result of incorrect variant calling. Set GQ>=30, i.e, the probability that the call is incorrect is =<0.1%.
 
-```{r eval=FALSE}
+```{r}
 geno_novo_not_ref_high_qual <- geno_novo_not_ref %>% dplyr::filter(GQ_mother>=30) %>% dplyr::filter(GQ_father>=30) %>% dplyr::filter(GQ_proband>=30)
-geno_novo_not_ref_high_qual
 ```
 
-Select *de novo* variants found in the filtered VEP annotation. For each variant, select a single gene transcript that contains the variant.
+```{r echo=FALSE}
+paged_table(head(geno_novo_not_ref_high_qual))
+```
 
-```{r eval=FALSE}
+We select *de novo* variants found in the filtered VEP annotation. For each variant, we chose a single gene transcript that contains the variant, prioritizing canonical and curated transcripts.
+
+```{r, message=FALSE, warning=FALSE}
 prob_novo <- refseq %>% inner_join(geno_novo_not_ref)
 prob_novo <- prob_novo %>% group_by(Uploaded_variation) %>% 
   arrange(desc(CANONICAL), as.character(Feature),.by_group = T) %>% 
@@ -268,44 +268,53 @@ prob_novo_high_qual <- refseq %>% inner_join(geno_novo_not_ref_high_qual)
 prob_novo_high_qual <- prob_novo_high_qual %>% group_by(Uploaded_variation) %>% 
   arrange(desc(CANONICAL), as.character(Feature),.by_group = T) %>% 
   dplyr::filter(Feature == Feature[1])
-prob_novo_high_qual
+```
+
+```{r echo=FALSE}
+paged_table(head(prob_novo_high_qual))
 ```
 
 ## Homozygous Variants
 
-Select the homozygous variants in the proband.
+We select the homozygous variants in the proband.
 
-```{r eval=FALSE}
+```{r}
 geno_hom <- wh_geno_auto %>% 
   dplyr::filter(substr(proband,1,1)==substr(proband,3,3) & substr(proband,1,1) != 0 & substr(proband,1,1) != ".")
-geno_hom[c(1:5)]
 ```
 
-Discard the homozygous variants for which one of the parents is also homozygous (e.g. 1/1, 0/1 -\> 1/1) since these variants are unlikely to be pathogenic.
+We discard the homozygous variants for which one of the parents is also homozygous (e.g. 1/1, 0/1 -\> 1/1) since these variants are unlikely to be pathogenic.
 
-```{r eval=FALSE}
+```{r}
 geno_hom2 <- geno_hom %>%
   dplyr::filter(! ( (substr(mother,1,1)==substr(mother,3,3) & substr(mother,1,1)==substr(proband,1,1)) |
                       (substr(father,1,1)==substr(father,3,3) & substr(father,1,1)==substr(proband,1,1)) )
                   )
-geno_hom2[c(1:5)]
 ```
 
-Select the homozygous variants found in the filtered VEP annotation. For each variant, select a single gene transcript that contains the variant.
 
-```{r eval=FALSE}
+```{r echo=FALSE}
+paged_table(head(geno_hom2))
+```
+
+We select the homozygous variants found in the filtered VEP annotation.
+
+```{r, message=FALSE, warning=FALSE}
 prob_hom <- refseq %>% inner_join(geno_hom2)
 prob_hom <- prob_hom %>% group_by(Uploaded_variation) %>% 
   arrange(desc(CANONICAL), as.character(Feature),.by_group = T) %>% 
   dplyr::filter(Feature == Feature[1])
-prob_hom
+```
+
+```{r echo=FALSE}
+paged_table(head(prob_hom))
 ```
 
 ## Compound Heterozygous Variants
 
-Select the unphased compound heterozygous variants.
+We select the unphased compound heterozygous variants.
 
-```{r eval=FALSE}
+```{r, message=FALSE, warning=FALSE}
 prob_2plus_het <- refseq %>% dplyr::filter(substr(proband,1,1)!=substr(proband,3,3)) 
 prob_2plus_het <- prob_2plus_het %>% group_by(Feature) %>% 
   dplyr::filter(length(unique(PS_proband))>=2 | length(is.na(PS_proband)[is.na(PS_proband)==TRUE])>=2 ) %>% 
@@ -313,55 +322,57 @@ prob_2plus_het <- prob_2plus_het %>% group_by(Feature) %>%
 prob_2plus_het2 <- prob_2plus_het %>% group_by(Gene) %>% 
   arrange(desc(CANONICAL), as.character(Feature),.by_group = T) %>% 
   dplyr::filter(Feature == Feature[1])
-prob_2plus_het2
 ```
 
-Select the phased compound heterozygous variants.
+We select the phased compound heterozygous variants.
 
-```{r eval=FALSE}
+```{r, message=FALSE, warning=FALSE}
 prob_comp_het <- refseq %>% group_by(Feature, PS_proband) %>% 
-  dplyr::filter(any(substr(proband,1,1)>=1 & substr(proband,2,2)=="|") & any(substr(proband,3,3)>=1 & substr(proband,2,2)=="|")) 
+  dplyr::filter(any(substr(proband,1,1)>=1 & substr(proband,2,2)=="|") & any(substr(proband,3,3)>=1 & substr(proband,2,2)=="|"))
 prob_comp_het2 <- prob_comp_het %>% group_by(Gene) %>% 
   arrange(desc(CANONICAL), as.character(Feature),.by_group = T) %>% 
   dplyr::filter(Feature == Feature[1])
-prob_comp_het2
+```
+
+```{r echo=FALSE}
+paged_table(head(prob_comp_het2))
 ```
 
 ## X Chromosome
 
-Remove X chromosome calls that are "heterozygous" for male individuals.
+We remove X chromosome calls that are "heterozygous" for male individuals, proband and father.
 
-```{r eval=FALSE}
+```{r, message=FALSE, warning=FALSE}
 wh_geno_X_filt <- wh_geno_X %>% 
-  dplyr::filter(( substr(proband,1,1)==substr(proband,3,3) & substr(father,1,1)==substr(father,3,3) ))
+  dplyr::filter(( substr(proband,1,1)==substr(proband,3,3) & substr(father,1,1)==substr(father,3,3)))
 prob_X <- inner_join(refseq_X, wh_geno_X) %>% group_by(Gene) %>% 
   arrange(desc(CANONICAL), as.character(Feature),.by_group = T) %>% 
   dplyr::filter(Feature == Feature[1])
-prob_X
 ```
 
+```{r echo=FALSE}
+paged_table(head(prob_X))
+```
 
 ## Disease Genes
 
-Select one entry for each variant in refseq table, prioritizing canonical and curated transcripts.
+We select one entry for each variant in the refseq table, prioritizing canonical and curated transcripts.
 
-```{r eval=FALSE}
+```{r}
 refseq2 <- refseq01 %>% group_by(Uploaded_variation) %>% 
   arrange(desc(CANONICAL), as.character(Feature),.by_group = T) %>% 
   dplyr::filter(Feature == Feature[1])
-refseq2
 ```
 
-Select variants that fall in green genes from the UK PanelApp renal broad superpanel.
+We select variants that fall in green genes from the UK PanelApp renal broad superpanel.
 
-```{r eval=FALSE}
+```{r, message=FALSE, warning=FALSE}
 # UK Panel App
-panel <- read_tsv("renal_superpanel_broad.tsv")
+panel <- read_tsv("data/renal_superpanel_broad.tsv")
 panel_green <- panel %>% dplyr::filter(GEL_Status==3)
 refseq_green <- refseq2 %>% dplyr::filter(HGNC_ID %in% panel_green$HGNC)
-
 #Australia Panel App
-panel_au <- read_tsv("Kidneyome_SuperPanel.tsv") %>% 
+panel_au <- read_tsv("data/Kidneyome_SuperPanel.tsv") %>% 
   dplyr::filter(!duplicated(HGNC)) %>%
   dplyr::mutate(Status=case_when(
     GEL_Status==4|GEL_Status==3 ~ "Green", 
@@ -369,12 +380,15 @@ panel_au <- read_tsv("Kidneyome_SuperPanel.tsv") %>%
     GEL_Status==1|GEL_Status==0 ~ "Red")) %>%
   dplyr::select(HGNC,Status)
 refseq_au <- refseq2 %>% inner_join(panel_au, join_by(HGNC_ID==HGNC))
-refseq_au
 ```
 
-Combine annotations.
+```{r echo=FALSE}
+paged_table(head(refseq_au))
+```
 
-```{r eval=FALSE}
+We combine annotations into a single table.
+
+```{r, message=FALSE, warning=FALSE}
 refseq3 <- refseq01 %>% group_by(Gene) %>% 
   arrange(desc(CANONICAL), as.character(Feature),.by_group = T) %>% ungroup()
 refseq4 <- refseq3 %>% 

@@ -12,11 +12,16 @@ link-citations: yes
 
 # Overview
 
-We run the pipeline on the Compute Canada servers. Pre-processing steps will be executed with the Sarek pipeline from nf-core [@ewels2020nf].
+This is a pipeline for whole exome sequencing analysis to identify the genetic causes of Mendelian disorders. It was assembled in the Kitzler lab at the McGill University Health Centre and run on the Compute Canada servers. It includes the following steps:
 
-1. Raw sequence pre-processing and alignment.
+1. Pre-processing of raw reads.
 2. Germline variant calling for SNVs and indels.
-3. Variant annotation and trio analysis to identify disease-causing variants.
+3. Estimation of kinship coefficients to verify pedigree relationships.
+4. Variant annotation and trio analysis to identify disease-causing variants.
+
+We follow [GATK best practices](https://gatk.broadinstitute.org/hc/en-us/sections/360007226651-Best-Practices-Workflows) for pre-processing and variant calling. We execute pre-processing steps with the [nf-core/sarek pipeline](https://nf-co.re/sarek/3.2.3). We use [WhatsHap](https://whatshap.readthedocs.io/en/latest/) to phase variants and [OpenMendel](https://openmendel.github.io/) and [PLINK](https://zzz.bwh.harvard.edu/plink/) to estimate kinship coefficients. We use Ensembl VEP to annotate variants. We provide *R* scripts to identify phased compound heterozygous variants as well as *de novo*, homozygous and unphased compound heterozygous variants. We output the results to Excel in a readable format.
+
+We illustrate the expected output and benchmark the pipeline using Illumina paired-end WES data from the [GIAB](https://www.nist.gov/programs-projects/genome-bottle) Ashkenazi Jewish reference trio ([SRR2962669](https://www.ncbi.nlm.nih.gov/sra/?term=SRR2962669), [SRR2962692](https://www.ncbi.nlm.nih.gov/sra/?term=SRR2962692), [SRR2962694](https://www.ncbi.nlm.nih.gov/sra/?term=SRR2962694)).
 
 ```{r include=FALSE}
 # automatically create a bib database for R packages
