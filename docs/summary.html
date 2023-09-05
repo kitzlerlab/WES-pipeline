@@ -23,7 +23,7 @@
 <meta name="author" content="Marc Henein and Zachary Sentell" />
 
 
-<meta name="date" content="2023-09-01" />
+<meta name="date" content="2023-09-05" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -218,7 +218,7 @@ div.csl-indent {
             <section class="normal" id="section-">
 <div id="summary" class="section level1 hasAnchor" number="6">
 <h1><span class="header-section-number">6</span> Summary<a href="summary.html#summary" class="anchor-section" aria-label="Anchor link to header"></a></h1>
-<p>We ouput the results of the analysis to an Excel workbook with seperate sheets for de novo, homozygous, unphased compound hetorygous and phased compound heterozygous variants. We highlight variants in the same transcript with a single colour for ease of viewing.</p>
+<p>We ouput the results of the analysis to an <a href="https://github.com/kitzlerlab/WES-platform/tree/main/result">Excel workbook</a> with seperate sheets for de novo, homozygous, unphased compound hetorygous and phased compound heterozygous variants. We highlight variants in the same transcript with a single colour for ease of viewing.</p>
 <div class="sourceCode" id="cb41"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb41-1"><a href="summary.html#cb41-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(openxlsx)</span>
 <span id="cb41-2"><a href="summary.html#cb41-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb41-3"><a href="summary.html#cb41-3" aria-hidden="true" tabindex="-1"></a>names <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">&quot;de_novo&quot;</span>, <span class="st">&quot;de_novo_gq&gt;=30&quot;</span>,<span class="st">&quot;homozygote&quot;</span>,<span class="st">&quot;unphased_compound_heterozygote&quot;</span>,<span class="st">&quot;phased_compound_heterozygote&quot;</span>,<span class="st">&quot;chrX&quot;</span>,<span class="st">&quot;ukpanelapp_green&quot;</span>,<span class="st">&quot;aupanelapp&quot;</span>,<span class="st">&quot;all_variants&quot;</span>)</span>

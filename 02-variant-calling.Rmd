@@ -128,7 +128,9 @@ java -Xmx2g -jar $GATK_JAR CalculateGenotypePosteriors \
 
 We benchmarked the pipeline against the GIAB high-confidence variants calls using the Illumina hap.py VCF comparison tool. We obtain the following results for the proband HG002:
 
-| Type | Truth TP | Truth FN | Query FP | Recall | Precision |
-| :--- | :--- | :--- | :--- | :--- | :--- |
-| SNP | 37653 | 753 | 369 | 98.0% | 99.0% |
-| INDEL | 2732 | 176 | 382 | 93.9% | 87.9% |
+| Type | Truth TP | Truth FN | Query FP | Recall | Precision | F Score |
+| :--- | :--- | :--- | :--- | :--- | :--- | :--- |
+| SNV | 37653 | 753 | 369 | 98.0% | 99.0% | 0.985 |
+| INDEL | 2732 | 176 | 382 | 93.9% | 87.9% | 0.908 |
+
+We note that the F-scores are comparable to those obtained by @kumaran2019performance: SNV F-score>0.96 and INDEL F-score>0.9.

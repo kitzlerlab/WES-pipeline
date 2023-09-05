@@ -4,9 +4,11 @@ author: "Marc Henein and Zachary Sentell"
 date: "`r Sys.Date()`"
 site: bookdown::bookdown_site
 documentclass: book
-bibliography: [book.bib, packages.bib]
+bibliography:
+- book.bib
+- packages.bib
 biblio-style: apalike
-description: "This is a pipeline for whole exome sequencing analysis."
+description: This is a pipeline for whole exome sequencing analysis.
 link-citations: yes
 ---
 
@@ -19,9 +21,9 @@ This is a pipeline for whole exome sequencing analysis to identify the genetic c
 3. Estimation of kinship coefficients to verify pedigree relationships.
 4. Variant annotation and trio analysis to identify disease-causing variants.
 
-We follow [GATK best practices](https://gatk.broadinstitute.org/hc/en-us/sections/360007226651-Best-Practices-Workflows) for pre-processing and variant calling. We execute pre-processing steps with the [nf-core/sarek pipeline](https://nf-co.re/sarek/3.2.3). We use [WhatsHap](https://whatshap.readthedocs.io/en/latest/) to phase variants and [OpenMendel](https://openmendel.github.io/) and [PLINK](https://zzz.bwh.harvard.edu/plink/) to estimate kinship coefficients. We use Ensembl VEP to annotate variants. We provide *R* scripts to identify phased compound heterozygous variants as well as *de novo*, homozygous and unphased compound heterozygous variants. We output the results to Excel in a readable format.
+We follow [GATK best practices](https://gatk.broadinstitute.org/hc/en-us/sections/360007226651-Best-Practices-Workflows) for pre-processing and variant calling. We execute pre-processing steps with the [nf-core/sarek pipeline](https://nf-co.re/sarek/3.2.3). We use [WhatsHap](https://whatshap.readthedocs.io/en/latest/) to phase variants, [Linkdatagen](https://bioinf.wehi.edu.au/software/linkdatagen/) to select SNPs in approximate linkage equilibrium and [OpenMendel](https://openmendel.github.io/) and [PLINK](https://zzz.bwh.harvard.edu/plink/) to estimate kinship coefficients. We use [Ensembl VEP](https://useast.ensembl.org/info/docs/tools/vep/script/index.html) to annotate variants. We provide *R* scripts to identify phased compound heterozygous variants as well as *de novo*, homozygous and unphased compound heterozygous variants. We output the results to Excel in a readable format.
 
-We illustrate the expected output and benchmark the pipeline using Illumina paired-end WES data from the [GIAB](https://www.nist.gov/programs-projects/genome-bottle) Ashkenazi Jewish reference trio ([SRR2962669](https://www.ncbi.nlm.nih.gov/sra/?term=SRR2962669), [SRR2962692](https://www.ncbi.nlm.nih.gov/sra/?term=SRR2962692), [SRR2962694](https://www.ncbi.nlm.nih.gov/sra/?term=SRR2962694)).
+We illustrate the expected output and benchmark the pipeline using Illumina paired-end WES data from the [GIAB](https://www.nist.gov/programs-projects/genome-bottle) Ashkenazi Jewish reference trio ([SRR2962669](https://www.ncbi.nlm.nih.gov/sra/?term=SRR2962669), [SRR2962692](https://www.ncbi.nlm.nih.gov/sra/?term=SRR2962692), [SRR2962694](https://www.ncbi.nlm.nih.gov/sra/?term=SRR2962694)). Bash scripts submitted to Slurm as well as associated data and results can be found on the [GitHub repository](https://github.com/kitzlerlab/WES-platform).
 
 ```{r include=FALSE}
 # automatically create a bib database for R packages

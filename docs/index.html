@@ -23,7 +23,7 @@
 <meta name="author" content="Marc Henein and Zachary Sentell" />
 
 
-<meta name="date" content="2023-09-01" />
+<meta name="date" content="2023-09-05" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -219,7 +219,7 @@ div.csl-indent {
 <div id="header">
 <h1 class="title">Whole Exome Sequencing Platform</h1>
 <p class="author"><em>Marc Henein and Zachary Sentell</em></p>
-<p class="date"><em>2023-09-01</em></p>
+<p class="date"><em>2023-09-05</em></p>
 </div>
 <div id="overview" class="section level1 hasAnchor" number="1">
 <h1><span class="header-section-number">1</span> Overview<a href="index.html#overview" class="anchor-section" aria-label="Anchor link to header"></a></h1>
@@ -230,8 +230,8 @@ div.csl-indent {
 <li>Estimation of kinship coefficients to verify pedigree relationships.</li>
 <li>Variant annotation and trio analysis to identify disease-causing variants.</li>
 </ol>
-<p>We follow <a href="https://gatk.broadinstitute.org/hc/en-us/sections/360007226651-Best-Practices-Workflows">GATK best practices</a> for pre-processing and variant calling. We execute pre-processing steps with the <a href="https://nf-co.re/sarek/3.2.3">nf-core/sarek pipeline</a>. We use <a href="https://whatshap.readthedocs.io/en/latest/">WhatsHap</a> to phase variants and <a href="https://openmendel.github.io/">OpenMendel</a> and <a href="https://zzz.bwh.harvard.edu/plink/">PLINK</a> to estimate kinship coefficients. We use Ensembl VEP to annotate variants. We provide <em>R</em> scripts to identify phased compound heterozygous variants as well as <em>de novo</em>, homozygous and unphased compound heterozygous variants. We output the results to Excel in a readable format.</p>
-<p>We illustrate the expected output and benchmark the pipeline using Illumina paired-end WES data from the <a href="https://www.nist.gov/programs-projects/genome-bottle">GIAB</a> Ashkenazi Jewish reference trio (<a href="https://www.ncbi.nlm.nih.gov/sra/?term=SRR2962669">SRR2962669</a>, <a href="https://www.ncbi.nlm.nih.gov/sra/?term=SRR2962692">SRR2962692</a>, <a href="https://www.ncbi.nlm.nih.gov/sra/?term=SRR2962694">SRR2962694</a>).</p>
+<p>We follow <a href="https://gatk.broadinstitute.org/hc/en-us/sections/360007226651-Best-Practices-Workflows">GATK best practices</a> for pre-processing and variant calling. We execute pre-processing steps with the <a href="https://nf-co.re/sarek/3.2.3">nf-core/sarek pipeline</a>. We use <a href="https://whatshap.readthedocs.io/en/latest/">WhatsHap</a> to phase variants, <a href="https://bioinf.wehi.edu.au/software/linkdatagen/">Linkdatagen</a> to select SNPs in approximate linkage equilibrium and <a href="https://openmendel.github.io/">OpenMendel</a> and <a href="https://zzz.bwh.harvard.edu/plink/">PLINK</a> to estimate kinship coefficients. We use <a href="https://useast.ensembl.org/info/docs/tools/vep/script/index.html">Ensembl VEP</a> to annotate variants. We provide <em>R</em> scripts to identify phased compound heterozygous variants as well as <em>de novo</em>, homozygous and unphased compound heterozygous variants. We output the results to Excel in a readable format.</p>
+<p>We illustrate the expected output and benchmark the pipeline using Illumina paired-end WES data from the <a href="https://www.nist.gov/programs-projects/genome-bottle">GIAB</a> Ashkenazi Jewish reference trio (<a href="https://www.ncbi.nlm.nih.gov/sra/?term=SRR2962669">SRR2962669</a>, <a href="https://www.ncbi.nlm.nih.gov/sra/?term=SRR2962692">SRR2962692</a>, <a href="https://www.ncbi.nlm.nih.gov/sra/?term=SRR2962694">SRR2962694</a>). Bash scripts submitted to Slurm as well as associated data and results can be found on the <a href="https://github.com/kitzlerlab/WES-platform">GitHub repository</a>.</p>
 
 </div>
             </section>

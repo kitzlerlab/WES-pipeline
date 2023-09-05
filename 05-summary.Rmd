@@ -1,6 +1,6 @@
 # Summary
 
-We ouput the results of the analysis to an Excel workbook with seperate sheets for de novo, homozygous, unphased compound hetorygous and phased compound heterozygous variants. We highlight variants in the same transcript with a single colour for ease of viewing.
+We ouput the results of the analysis to an [Excel workbook](https://github.com/kitzlerlab/WES-platform/tree/main/result) with seperate sheets for de novo, homozygous, unphased compound hetorygous and phased compound heterozygous variants. We highlight variants in the same transcript with a single colour for ease of viewing.
 
 ```{r, warning=FALSE, message=FALSE}
 library(openxlsx)

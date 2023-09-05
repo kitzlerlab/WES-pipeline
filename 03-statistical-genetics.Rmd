@@ -16,11 +16,15 @@ aligned_HG002.bam aligned_HG003.bam aligned_HG004.bam \
 We seek to verify pedigree relationships and identify hidden relatedness between samples. We first select SNPs in approximate linkage equilibrium with [Linkdatagen](https://bioinf.wehi.edu.au/software/linkdatagen/) based on the genetic linkage map of HapMap SNPs. Linkdatagen also eliminates Mendelian inconsitencies in the data.
 
 ```{bash eval=FALSE}
+# Split variant calling file into seperate files for each individual
+bcftools +split AJ_output_vqsr_snps_hard_indels.vcf.gz -Ov -o split
+
+# Write path to each individual's vcf in a text file named MyVCFlist.txt
 perl vcf2linkdatagen.pl \
--variantCaller mpileup \
--annotfile annotHapMap2U.txt \
+-variantCaller unifiedgenotyper \
+-annotfile annotHapMap2U_hg38.txt \
 -pop CEU -mindepth 10 -missingness 0 \
--idlist MyVCFlist.txt > MySNPs.brlmm
+-idlist MyVCFlist.txt > HG002_trio.brlmm
 
 perl linkdatagen.pl \
 -data m -pedfile MyPed.ped \
@@ -34,15 +38,21 @@ perl linkdatagen.pl \
 
 We construct an allele frequency report for the chosen SNPs.
 
-```{r eval=FALSE}
-map <- read_delim(file = "plink.map", delim = " ", col_select = 1:4, col_names = c("CHR", "SNP", "cM", "bp"))
-ord <- read_tsv(file = "orderedSNPs.txt")
+```{r warning=FALSE, message=FALSE}
+library(tidyverse)
+map <- read_delim(file = "data/plink.map", delim = " ", col_select = 1:4, col_names = c("CHR", "SNP", "cM", "bp"))
+ord <- read_tsv(file = "data/orderedSNPs.txt")
 freq_pl <- map %>% left_join(ord, by = "SNP") %>% 
   dplyr::select(CHR, SNP, `Allele freq`) %>% 
-  mutate(A1="1") %>% mutate(A1="1") %>% mutate(A2="2") %>% mutate(NCHROBS="300") %>% 
+  mutate(A1="1") %>% mutate(A2="2") %>% mutate(NCHROBS="300") %>% 
   dplyr::select(CHR, SNP, A1, A2, `Allele freq`, NCHROBS) %>% 
-  rename(`Allele freq` = "MAF")
-write_delim(freq_pl, "freq_pl.frq", delim = " ")
+  dplyr::rename(MAF = `Allele freq`)
+write_delim(freq_pl, "result/freq_pl.frq", delim = " ")
+```
+
+```{r echo=FALSE}
+library(rmarkdown)
+paged_table(head(freq_pl))
 ```
 
 Alternatively, with a sufficient number of samples, we can estimate the linkage disequilibrium between alleles and remove correlated SNPs using PLINK.
@@ -51,10 +61,11 @@ Alternatively, with a sufficient number of samples, we can estimate the linkage 
 plink --file data --indep 50 5 2
 ```
 
-We then calculate the empirical kinship coefficient by estimating identity by descent using identity by state and allele frequencies [@lange2002mathematical]. We run this calculation in PLINK.
+We then calculate the empirical kinship coefficient by estimating identity by descent based on identity by state and population allele frequencies [@lange2002mathematical]. We run this calculation in PLINK.
 
 ```{bash eval=FALSE}
-plink --file plink --genome --read-freq freq_pl.frq
+module load plink/1.9b_6.21-x86_64
+plink --file plink --genome full --read-freq freq_pl.frq
 ```
 
 We also run this calculation using MendelKinship from the OpenMendel project.
@@ -63,6 +74,14 @@ We also run this calculation using MendelKinship from the OpenMendel project.
 using MendelKinship, CSV
 Kinship("control_compare.txt")
 ```
+
+We obtain the following results for the AJ reference trio using PLINK. PI_HAT is the estimated kinship coefficient between individuals IID1 and IID2. We note that the estimated kinship coefficient between individuals HG003 and HG004, which equals the the inbreeding coefficient of their son HG002, is 0.
+
+| IID1 | IID2 | RT | EZ | Z0 | Z1 | Z2 | PI_HAT | DST | IBS0 | IBS1 | IBS2 |
+| :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
+| HG002 | HG003 | PO | 0.5 | 0 | 1 | 0 | 0.5 | 0.752334 | 0 | 2918 | 2973 |
+| HG002 | HG004 | PO | 0.5 | 0 | 1 | 0 | 0.5 | 0.756153 | 0 | 2873 | 3018 |
+| HG003 | HG004 | OT | 0 | 1 | 0 | 0 | 0 | 0.616449 | 638 | 3243 | 2010 |
 
 ## Runs of Homozygosity
 
