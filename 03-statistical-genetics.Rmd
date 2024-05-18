@@ -87,6 +87,8 @@ We obtain the following results for the AJ reference trio using PLINK. PI_HAT is
 
 If we suspect some degree of consanguinity, we may look for a homozygous pathogenic variant in runs of homozygosity using [AutozygosityMapper](https://teufelsberg.charite.de/AutozygosityMapper/).
 
+![AutozygosityMapper report for HG002 as case and HG003 and HG004 as controls.](images/autozygositymapper.png)
+
 ## Linkage Analysis
 
 Using the same set of SNPs in linkage equillibrium, we can run linkage analysis on appropriately chosen pedigrees using OpenMendel for two-point linkage or multipoint linkage analysis.

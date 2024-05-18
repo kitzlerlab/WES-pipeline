@@ -4,4 +4,10 @@ bookdown::gitbook:
   config:
     toc:
       before: |
-        <li><a href="./">Whole Exome Sequencing Platform</a></li>
+        <li><a href="./">Whole Exome Sequencing Pipeline</a></li>
+bookdown::pdf_book:
+  includes:
+    in_header: preamble.tex
+  latex_engine: xelatex
+  citation_package: natbib
+  keep_tex: yes

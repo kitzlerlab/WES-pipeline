@@ -4,18 +4,18 @@
 
   <meta charset="utf-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-  <title>2 Pre-processing | Whole Exome Sequencing Platform</title>
+  <title>2 Pre-processing | Whole Exome Sequencing Pipeline</title>
   <meta name="description" content="This is a pipeline for whole exome sequencing analysis." />
-  <meta name="generator" content="bookdown 0.35 and GitBook 2.6.7" />
+  <meta name="generator" content="bookdown 0.39 and GitBook 2.6.7" />
 
-  <meta property="og:title" content="2 Pre-processing | Whole Exome Sequencing Platform" />
+  <meta property="og:title" content="2 Pre-processing | Whole Exome Sequencing Pipeline" />
   <meta property="og:type" content="book" />
   
   <meta property="og:description" content="This is a pipeline for whole exome sequencing analysis." />
   
 
   <meta name="twitter:card" content="summary" />
-  <meta name="twitter:title" content="2 Pre-processing | Whole Exome Sequencing Platform" />
+  <meta name="twitter:title" content="2 Pre-processing | Whole Exome Sequencing Pipeline" />
   
   <meta name="twitter:description" content="This is a pipeline for whole exome sequencing analysis." />
   
@@ -23,7 +23,7 @@
 <meta name="author" content="Marc Henein and Zachary Sentell" />
 
 
-<meta name="date" content="2023-09-05" />
+<meta name="date" content="2024-05-17" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -52,8 +52,6 @@
 <link href="libs/anchor-sections-1.1.0/anchor-sections.css" rel="stylesheet" />
 <link href="libs/anchor-sections-1.1.0/anchor-sections-hash.css" rel="stylesheet" />
 <script src="libs/anchor-sections-1.1.0/anchor-sections.js"></script>
-<link href="libs/pagedtable-1.1/css/pagedtable.css" rel="stylesheet" />
-<script src="libs/pagedtable-1.1/js/pagedtable.js"></script>
 
 
 <style type="text/css">
@@ -125,28 +123,6 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
   
   div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
 </style>
-<style type="text/css">
-/* Used with Pandoc 2.11+ new --citeproc when CSL is used */
-div.csl-bib-body { }
-div.csl-entry {
-  clear: both;
-}
-.hanging div.csl-entry {
-  margin-left:2em;
-  text-indent:-2em;
-}
-div.csl-left-margin {
-  min-width:2em;
-  float:left;
-}
-div.csl-right-inline {
-  margin-left:2em;
-  padding-left:1em;
-}
-div.csl-indent {
-  margin-left: 2em;
-}
-</style>
 
 <link rel="stylesheet" href="style.css" type="text/css" />
 </head>
@@ -161,24 +137,25 @@ div.csl-indent {
       <nav role="navigation">
 
 <ul class="summary">
-<li><a href="./">Whole Exome Sequencing Platform</a></li>
+<li><a href="./">Whole Exome Sequencing Pipeline</a></li>
+
 <li class="divider"></li>
 <li class="chapter" data-level="1" data-path="index.html"><a href="index.html"><i class="fa fa-check"></i><b>1</b> Overview</a></li>
 <li class="chapter" data-level="2" data-path="align.html"><a href="align.html"><i class="fa fa-check"></i><b>2</b> Pre-processing</a>
 <ul>
-<li class="chapter" data-level="2.1" data-path="align.html"><a href="align.html#sarek-pipeline"><i class="fa fa-check"></i><b>2.1</b> Sarek Pipeline</a></li>
-<li class="chapter" data-level="2.2" data-path="align.html"><a href="align.html#quality-control-of-raw-reads"><i class="fa fa-check"></i><b>2.2</b> Quality Control of Raw Reads</a></li>
-<li class="chapter" data-level="2.3" data-path="align.html"><a href="align.html#alignment"><i class="fa fa-check"></i><b>2.3</b> Alignment</a></li>
-<li class="chapter" data-level="2.4" data-path="align.html"><a href="align.html#mark-duplicates"><i class="fa fa-check"></i><b>2.4</b> Mark Duplicates</a></li>
-<li class="chapter" data-level="2.5" data-path="align.html"><a href="align.html#base-quality-score-recalibration"><i class="fa fa-check"></i><b>2.5</b> Base Quality Score Recalibration</a></li>
-<li class="chapter" data-level="2.6" data-path="align.html"><a href="align.html#quality-control-of-alignment"><i class="fa fa-check"></i><b>2.6</b> Quality Control of Alignment</a></li>
+<li class="chapter" data-level="2.1" data-path="align.html"><a href="align.html#quality-control-of-raw-reads"><i class="fa fa-check"></i><b>2.1</b> Quality Control of Raw Reads</a></li>
+<li class="chapter" data-level="2.2" data-path="align.html"><a href="align.html#alignment"><i class="fa fa-check"></i><b>2.2</b> Alignment</a></li>
+<li class="chapter" data-level="2.3" data-path="align.html"><a href="align.html#mark-duplicates"><i class="fa fa-check"></i><b>2.3</b> Mark Duplicates</a></li>
+<li class="chapter" data-level="2.4" data-path="align.html"><a href="align.html#base-quality-score-recalibration"><i class="fa fa-check"></i><b>2.4</b> Base Quality Score Recalibration</a></li>
+<li class="chapter" data-level="2.5" data-path="align.html"><a href="align.html#quality-control-of-alignment"><i class="fa fa-check"></i><b>2.5</b> Quality Control of Alignment</a></li>
 </ul></li>
 <li class="chapter" data-level="3" data-path="calling.html"><a href="calling.html"><i class="fa fa-check"></i><b>3</b> Variant Calling</a>
 <ul>
 <li class="chapter" data-level="3.1" data-path="calling.html"><a href="calling.html#snvindel-calling"><i class="fa fa-check"></i><b>3.1</b> SNV/Indel Calling</a></li>
 <li class="chapter" data-level="3.2" data-path="calling.html"><a href="calling.html#variant-filtration"><i class="fa fa-check"></i><b>3.2</b> Variant Filtration</a></li>
 <li class="chapter" data-level="3.3" data-path="calling.html"><a href="calling.html#genotype-posteriors"><i class="fa fa-check"></i><b>3.3</b> Genotype Posteriors</a></li>
-<li class="chapter" data-level="3.4" data-path="calling.html"><a href="calling.html#benchmarking"><i class="fa fa-check"></i><b>3.4</b> Benchmarking</a></li>
+<li class="chapter" data-level="3.4" data-path="calling.html"><a href="calling.html#structural-variants"><i class="fa fa-check"></i><b>3.4</b> Structural Variants</a></li>
+<li class="chapter" data-level="3.5" data-path="calling.html"><a href="calling.html#benchmarking"><i class="fa fa-check"></i><b>3.5</b> Benchmarking</a></li>
 </ul></li>
 <li class="chapter" data-level="4" data-path="statistical-genetics.html"><a href="statistical-genetics.html"><i class="fa fa-check"></i><b>4</b> Statistical Genetics</a>
 <ul>
@@ -190,12 +167,13 @@ div.csl-indent {
 </ul></li>
 <li class="chapter" data-level="5" data-path="variant-annotation.html"><a href="variant-annotation.html"><i class="fa fa-check"></i><b>5</b> Variant Annotation</a>
 <ul>
-<li class="chapter" data-level="5.1" data-path="variant-annotation.html"><a href="variant-annotation.html#filtration"><i class="fa fa-check"></i><b>5.1</b> Filtration</a></li>
-<li class="chapter" data-level="5.2" data-path="variant-annotation.html"><a href="variant-annotation.html#de-novo-variants"><i class="fa fa-check"></i><b>5.2</b> <em>De Novo</em> Variants</a></li>
-<li class="chapter" data-level="5.3" data-path="variant-annotation.html"><a href="variant-annotation.html#homozygous-variants"><i class="fa fa-check"></i><b>5.3</b> Homozygous Variants</a></li>
-<li class="chapter" data-level="5.4" data-path="variant-annotation.html"><a href="variant-annotation.html#compound-heterozygous-variants"><i class="fa fa-check"></i><b>5.4</b> Compound Heterozygous Variants</a></li>
-<li class="chapter" data-level="5.5" data-path="variant-annotation.html"><a href="variant-annotation.html#x-chromosome"><i class="fa fa-check"></i><b>5.5</b> X Chromosome</a></li>
-<li class="chapter" data-level="5.6" data-path="variant-annotation.html"><a href="variant-annotation.html#disease-genes"><i class="fa fa-check"></i><b>5.6</b> Disease Genes</a></li>
+<li class="chapter" data-level="5.1" data-path="variant-annotation.html"><a href="variant-annotation.html#variant-effect-predictor"><i class="fa fa-check"></i><b>5.1</b> Variant Effect Predictor</a></li>
+<li class="chapter" data-level="5.2" data-path="variant-annotation.html"><a href="variant-annotation.html#filtration"><i class="fa fa-check"></i><b>5.2</b> Filtration</a></li>
+<li class="chapter" data-level="5.3" data-path="variant-annotation.html"><a href="variant-annotation.html#de-novo-variants"><i class="fa fa-check"></i><b>5.3</b> <em>De Novo</em> Variants</a></li>
+<li class="chapter" data-level="5.4" data-path="variant-annotation.html"><a href="variant-annotation.html#homozygous-variants"><i class="fa fa-check"></i><b>5.4</b> Homozygous Variants</a></li>
+<li class="chapter" data-level="5.5" data-path="variant-annotation.html"><a href="variant-annotation.html#compound-heterozygous-variants"><i class="fa fa-check"></i><b>5.5</b> Compound Heterozygous Variants</a></li>
+<li class="chapter" data-level="5.6" data-path="variant-annotation.html"><a href="variant-annotation.html#x-chromosome"><i class="fa fa-check"></i><b>5.6</b> X Chromosome</a></li>
+<li class="chapter" data-level="5.7" data-path="variant-annotation.html"><a href="variant-annotation.html#disease-genes"><i class="fa fa-check"></i><b>5.7</b> Disease Genes</a></li>
 </ul></li>
 <li class="chapter" data-level="6" data-path="summary.html"><a href="summary.html"><i class="fa fa-check"></i><b>6</b> Summary</a></li>
 <li class="chapter" data-level="" data-path="references.html"><a href="references.html"><i class="fa fa-check"></i>References</a></li>
@@ -208,7 +186,7 @@ div.csl-indent {
       <div class="body-inner">
         <div class="book-header" role="navigation">
           <h1>
-            <i class="fa fa-circle-o-notch fa-spin"></i><a href="./">Whole Exome Sequencing Platform</a>
+            <i class="fa fa-circle-o-notch fa-spin"></i><a href="./">Whole Exome Sequencing Pipeline</a>
           </h1>
         </div>
 
@@ -218,86 +196,75 @@ div.csl-indent {
             <section class="normal" id="section-">
 <div id="align" class="section level1 hasAnchor" number="2">
 <h1><span class="header-section-number">2</span> Pre-processing<a href="align.html#align" class="anchor-section" aria-label="Anchor link to header"></a></h1>
-<div id="sarek-pipeline" class="section level2 hasAnchor" number="2.1">
-<h2><span class="header-section-number">2.1</span> Sarek Pipeline<a href="align.html#sarek-pipeline" class="anchor-section" aria-label="Anchor link to header"></a></h2>
-<p>We execute the raw read pre-processing with the Sarek pipeline using Nextflow.</p>
-<div class="sourceCode" id="cb1"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb1-1"><a href="align.html#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="ex">module</span> load nextflow/23.04.3</span>
-<span id="cb1-2"><a href="align.html#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="va">exome</span><span class="op">=</span>sureselectV5_padded_hg38.bed</span>
-<span id="cb1-3"><a href="align.html#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="ex">nextflow</span> run nf-core-sarek-3.1.2/workflow <span class="dt">\</span></span>
-<span id="cb1-4"><a href="align.html#cb1-4" aria-hidden="true" tabindex="-1"></a>-profile singularity,beluga <span class="at">--input</span> ./samplesheet_ec.csv <span class="at">--outdir</span> ./results <span class="dt">\</span></span>
-<span id="cb1-5"><a href="align.html#cb1-5" aria-hidden="true" tabindex="-1"></a>--genome GATK.GRCh38 <span class="at">--intervals</span> <span class="va">$exome</span> <span class="dt">\</span></span>
-<span id="cb1-6"><a href="align.html#cb1-6" aria-hidden="true" tabindex="-1"></a>--wes <span class="at">--nucleotides_per_second</span> 1000 <span class="at">--save_reference</span> <span class="at">--save_output_as_bam</span> <span class="at">--save_mapped</span></span></code></pre></div>
-<p>In the following we describe the tools that the command calls with their associated scripts.</p>
-</div>
-<div id="quality-control-of-raw-reads" class="section level2 hasAnchor" number="2.2">
-<h2><span class="header-section-number">2.2</span> Quality Control of Raw Reads<a href="align.html#quality-control-of-raw-reads" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<div id="quality-control-of-raw-reads" class="section level2 hasAnchor" number="2.1">
+<h2><span class="header-section-number">2.1</span> Quality Control of Raw Reads<a href="align.html#quality-control-of-raw-reads" class="anchor-section" aria-label="Anchor link to header"></a></h2>
 <p>We obtain an overview of the quality of the raw reads with <a href="http://www.bioinformatics.babraham.ac.uk/projects/fastqc/">FastQC</a>.</p>
-<div class="sourceCode" id="cb2"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb2-1"><a href="align.html#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="ex">module</span> load fastqc/0.11.9</span>
-<span id="cb2-2"><a href="align.html#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="ex">fastqc</span> <span class="at">-t</span> 6 AJ_GIAB_fastq/HG002_1.fastq AJ_GIAB_fastq/HG002_2.fastq</span></code></pre></div>
+<div class="sourceCode" id="cb1"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb1-1"><a href="align.html#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="ex">module</span> load fastqc/0.11.9</span>
+<span id="cb1-2"><a href="align.html#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="ex">fastqc</span> <span class="at">-t</span> 6 AJ_GIAB_fastq/HG002_1.fastq AJ_GIAB_fastq/HG002_2.fastq</span></code></pre></div>
 <div class="figure">
 <img src="images/fastqc.png" alt="" />
-<p class="caption">FastQC Report for HG002 paired end R1.</p>
+<p class="caption">FastQC report for HG002 paired end R1.</p>
 </div>
 </div>
-<div id="alignment" class="section level2 hasAnchor" number="2.3">
-<h2><span class="header-section-number">2.3</span> Alignment<a href="align.html#alignment" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<div id="alignment" class="section level2 hasAnchor" number="2.2">
+<h2><span class="header-section-number">2.2</span> Alignment<a href="align.html#alignment" class="anchor-section" aria-label="Anchor link to header"></a></h2>
 <p>We trim raw reads with <a href="https://github.com/OpenGene/fastp">fastp</a>, then map reads to the GRCh38 reference genome with the BWA-MEM algorithm and convert SAM to BAM with samtools.</p>
-<div class="sourceCode" id="cb3"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb3-1"><a href="align.html#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="ex">module</span> load fastp/0.23.4</span>
-<span id="cb3-2"><a href="align.html#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="ex">module</span> load bwa</span>
-<span id="cb3-3"><a href="align.html#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="ex">module</span> load samtools</span>
-<span id="cb3-4"><a href="align.html#cb3-4" aria-hidden="true" tabindex="-1"></a><span class="bu">export</span> <span class="va">reference</span><span class="op">=</span><span class="va">$MUGQIC_INSTALL_HOME</span>/genomes/species/Homo_sapiens.GRCh38/</span>
-<span id="cb3-5"><a href="align.html#cb3-5" aria-hidden="true" tabindex="-1"></a><span class="va">id</span><span class="op">=</span><span class="st">&quot;&quot;</span></span>
-<span id="cb3-6"><a href="align.html#cb3-6" aria-hidden="true" tabindex="-1"></a><span class="va">sm</span><span class="op">=</span><span class="st">&quot;HG002&quot;</span></span>
-<span id="cb3-7"><a href="align.html#cb3-7" aria-hidden="true" tabindex="-1"></a><span class="ex">genome/bwa_index/Homo_sapiens.GRCh38.fa</span></span>
-<span id="cb3-8"><a href="align.html#cb3-8" aria-hidden="true" tabindex="-1"></a><span class="ex">fastp</span> <span class="at">-i</span> HG002_1.fq.gz <span class="at">-I</span> HG002_2.fq.gz <span class="dt">\</span></span>
-<span id="cb3-9"><a href="align.html#cb3-9" aria-hidden="true" tabindex="-1"></a>    <span class="at">--stdout</span> <span class="at">--thread</span> 2 <span class="dt">\</span></span>
-<span id="cb3-10"><a href="align.html#cb3-10" aria-hidden="true" tabindex="-1"></a>    <span class="at">-j</span> <span class="st">&quot;fastp-HG002.json&quot;</span> <span class="dt">\</span></span>
-<span id="cb3-11"><a href="align.html#cb3-11" aria-hidden="true" tabindex="-1"></a>    <span class="at">-h</span> <span class="st">&quot;fastp-HG002.html&quot;</span> <span class="dt">\</span></span>
-<span id="cb3-12"><a href="align.html#cb3-12" aria-hidden="true" tabindex="-1"></a>    <span class="dv">2</span><span class="op">&gt;</span> <span class="st">&quot;fastp-HG002.log&quot;</span> <span class="dt">\</span></span>
-<span id="cb3-13"><a href="align.html#cb3-13" aria-hidden="true" tabindex="-1"></a><span class="kw">|</span> <span class="ex">bwa</span> mem <span class="at">-v</span> 2 <span class="at">-M</span> <span class="at">-t</span> 32 <span class="at">-p</span> <span class="dt">\</span></span>
-<span id="cb3-14"><a href="align.html#cb3-14" aria-hidden="true" tabindex="-1"></a>    <span class="at">-R</span> <span class="st">&quot;@RG\tID:</span><span class="va">$id</span><span class="st">\tPL:ILLUMINA\tLB:</span><span class="va">$id</span><span class="st">&quot;</span>_<span class="st">&quot;</span><span class="va">$sm</span><span class="st">\tSM:</span><span class="va">$sm</span><span class="st">&quot;</span> <span class="dt">\</span></span>
-<span id="cb3-15"><a href="align.html#cb3-15" aria-hidden="true" tabindex="-1"></a>    <span class="va">$reference</span> <span class="at">-</span> <span class="dv">2</span><span class="op">&gt;</span> <span class="st">&quot;bwa-HG002.log&quot;</span> <span class="dt">\</span></span>
-<span id="cb3-16"><a href="align.html#cb3-16" aria-hidden="true" tabindex="-1"></a><span class="kw">|</span> <span class="ex">samtools</span> view <span class="at">-@</span> 16 <span class="dt">\</span></span>
-<span id="cb3-17"><a href="align.html#cb3-17" aria-hidden="true" tabindex="-1"></a>    <span class="at">-O</span> BAM <span class="dt">\</span></span>
-<span id="cb3-18"><a href="align.html#cb3-18" aria-hidden="true" tabindex="-1"></a>    <span class="at">-o</span> <span class="st">&quot;aligned_HG002.bam&quot;</span> <span class="dt">\</span></span>
-<span id="cb3-19"><a href="align.html#cb3-19" aria-hidden="true" tabindex="-1"></a>    <span class="dv">2</span><span class="op">&gt;</span> <span class="st">&quot;samtools-HG002.log&quot;</span></span></code></pre></div>
+<div class="sourceCode" id="cb2"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb2-1"><a href="align.html#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="ex">module</span> load fastp/0.23.4</span>
+<span id="cb2-2"><a href="align.html#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="ex">module</span> load bwa</span>
+<span id="cb2-3"><a href="align.html#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="ex">module</span> load samtools</span>
+<span id="cb2-4"><a href="align.html#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="bu">export</span> <span class="va">reference</span><span class="op">=</span><span class="va">$MUGQIC_INSTALL_HOME</span>/genomes/species/Homo_sapiens.GRCh38/</span>
+<span id="cb2-5"><a href="align.html#cb2-5" aria-hidden="true" tabindex="-1"></a><span class="va">id</span><span class="op">=</span><span class="st">&quot;&quot;</span></span>
+<span id="cb2-6"><a href="align.html#cb2-6" aria-hidden="true" tabindex="-1"></a><span class="va">sm</span><span class="op">=</span><span class="st">&quot;HG002&quot;</span></span>
+<span id="cb2-7"><a href="align.html#cb2-7" aria-hidden="true" tabindex="-1"></a><span class="ex">genome/bwa_index/Homo_sapiens.GRCh38.fa</span></span>
+<span id="cb2-8"><a href="align.html#cb2-8" aria-hidden="true" tabindex="-1"></a><span class="ex">fastp</span> <span class="at">-i</span> HG002_1.fq.gz <span class="at">-I</span> HG002_2.fq.gz <span class="dt">\</span></span>
+<span id="cb2-9"><a href="align.html#cb2-9" aria-hidden="true" tabindex="-1"></a>    <span class="at">--stdout</span> <span class="at">--thread</span> 2 <span class="dt">\</span></span>
+<span id="cb2-10"><a href="align.html#cb2-10" aria-hidden="true" tabindex="-1"></a>    <span class="at">-j</span> <span class="st">&quot;fastp-HG002.json&quot;</span> <span class="dt">\</span></span>
+<span id="cb2-11"><a href="align.html#cb2-11" aria-hidden="true" tabindex="-1"></a>    <span class="at">-h</span> <span class="st">&quot;fastp-HG002.html&quot;</span> <span class="dt">\</span></span>
+<span id="cb2-12"><a href="align.html#cb2-12" aria-hidden="true" tabindex="-1"></a>    <span class="dv">2</span><span class="op">&gt;</span> <span class="st">&quot;fastp-HG002.log&quot;</span> <span class="dt">\</span></span>
+<span id="cb2-13"><a href="align.html#cb2-13" aria-hidden="true" tabindex="-1"></a><span class="kw">|</span> <span class="ex">bwa</span> mem <span class="at">-v</span> 2 <span class="at">-M</span> <span class="at">-t</span> 32 <span class="at">-p</span> <span class="dt">\</span></span>
+<span id="cb2-14"><a href="align.html#cb2-14" aria-hidden="true" tabindex="-1"></a>    <span class="at">-R</span> <span class="st">&quot;@RG\tID:</span><span class="va">$id</span><span class="st">\tPL:ILLUMINA\tLB:</span><span class="va">$id</span><span class="st">&quot;</span>_<span class="st">&quot;</span><span class="va">$sm</span><span class="st">\tSM:</span><span class="va">$sm</span><span class="st">&quot;</span> <span class="dt">\</span></span>
+<span id="cb2-15"><a href="align.html#cb2-15" aria-hidden="true" tabindex="-1"></a>    <span class="va">$reference</span> <span class="at">-</span> <span class="dv">2</span><span class="op">&gt;</span> <span class="st">&quot;bwa-HG002.log&quot;</span> <span class="dt">\</span></span>
+<span id="cb2-16"><a href="align.html#cb2-16" aria-hidden="true" tabindex="-1"></a><span class="kw">|</span> <span class="ex">samtools</span> view <span class="at">-@</span> 16 <span class="dt">\</span></span>
+<span id="cb2-17"><a href="align.html#cb2-17" aria-hidden="true" tabindex="-1"></a>    <span class="at">-O</span> BAM <span class="dt">\</span></span>
+<span id="cb2-18"><a href="align.html#cb2-18" aria-hidden="true" tabindex="-1"></a>    <span class="at">-o</span> <span class="st">&quot;aligned_HG002.bam&quot;</span> <span class="dt">\</span></span>
+<span id="cb2-19"><a href="align.html#cb2-19" aria-hidden="true" tabindex="-1"></a>    <span class="dv">2</span><span class="op">&gt;</span> <span class="st">&quot;samtools-HG002.log&quot;</span></span></code></pre></div>
 </div>
-<div id="mark-duplicates" class="section level2 hasAnchor" number="2.4">
-<h2><span class="header-section-number">2.4</span> Mark Duplicates<a href="align.html#mark-duplicates" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<div id="mark-duplicates" class="section level2 hasAnchor" number="2.3">
+<h2><span class="header-section-number">2.3</span> Mark Duplicates<a href="align.html#mark-duplicates" class="anchor-section" aria-label="Anchor link to header"></a></h2>
 <p>We identify read pairs that are likely to have originated from duplicates of the same DNA fragment with GATK MarkDuplicates.</p>
-<div class="sourceCode" id="cb4"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb4-1"><a href="align.html#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="bu">export</span> <span class="va">GATK_JAR</span><span class="op">=</span>/cvmfs/soft.mugqic/CentOS6/software/GenomeAnalysisTK/GenomeAnalysisTK-4.1.8.1/gatk-package-4.1.8.1-local.jar</span>
-<span id="cb4-2"><a href="align.html#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="ex">java</span> <span class="at">-Xms60G</span> <span class="at">-Xmx60G</span> <span class="at">-jar</span> <span class="va">$GATK_JAR</span> MarkDuplicatesSpark <span class="dt">\</span></span>
-<span id="cb4-3"><a href="align.html#cb4-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">-I</span> aligned_HG002.bam <span class="dt">\</span></span>
-<span id="cb4-4"><a href="align.html#cb4-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">-O</span> aligned_HG002_markdup.bam <span class="dt">\</span></span>
-<span id="cb4-5"><a href="align.html#cb4-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">--spark-master</span> local[12]</span></code></pre></div>
+<div class="sourceCode" id="cb3"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb3-1"><a href="align.html#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="bu">export</span> <span class="va">GATK_JAR</span><span class="op">=</span>/cvmfs/soft.mugqic/CentOS6/software/GenomeAnalysisTK/GenomeAnalysisTK-4.1.8.1/gatk-package-4.1.8.1-local.jar</span>
+<span id="cb3-2"><a href="align.html#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="ex">java</span> <span class="at">-Xms60G</span> <span class="at">-Xmx60G</span> <span class="at">-jar</span> <span class="va">$GATK_JAR</span> MarkDuplicatesSpark <span class="dt">\</span></span>
+<span id="cb3-3"><a href="align.html#cb3-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">-I</span> aligned_HG002.bam <span class="dt">\</span></span>
+<span id="cb3-4"><a href="align.html#cb3-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">-O</span> aligned_HG002_markdup.bam <span class="dt">\</span></span>
+<span id="cb3-5"><a href="align.html#cb3-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">--spark-master</span> local[12]</span></code></pre></div>
 </div>
-<div id="base-quality-score-recalibration" class="section level2 hasAnchor" number="2.5">
-<h2><span class="header-section-number">2.5</span> Base Quality Score Recalibration<a href="align.html#base-quality-score-recalibration" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<div id="base-quality-score-recalibration" class="section level2 hasAnchor" number="2.4">
+<h2><span class="header-section-number">2.4</span> Base Quality Score Recalibration<a href="align.html#base-quality-score-recalibration" class="anchor-section" aria-label="Anchor link to header"></a></h2>
 <p>We use BQSR to recalibrate the base quality of reads based on on various covariates, i.e., read group, reported quality score, machine cycle, and nucleotide context.</p>
-<div class="sourceCode" id="cb5"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb5-1"><a href="align.html#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="ex">java</span> <span class="at">-Xms4G</span> <span class="at">-Xmx4G</span> <span class="at">-jar</span> <span class="va">$GATK_JAR</span> BaseRecalibrator <span class="dt">\</span></span>
-<span id="cb5-2"><a href="align.html#cb5-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">-I</span> aligned_HG002_markdup.bam <span class="dt">\</span></span>
-<span id="cb5-3"><a href="align.html#cb5-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">-R</span> <span class="va">$reference</span> <span class="dt">\</span></span>
-<span id="cb5-4"><a href="align.html#cb5-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">-O</span> aligned_HG002_markdup_bqsr.report <span class="dt">\</span></span>
-<span id="cb5-5"><a href="align.html#cb5-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">--known-sites</span> BQSR/Homo_sapiens_assembly38.dbsnp138.vcf <span class="dt">\</span></span>
-<span id="cb5-6"><a href="align.html#cb5-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">--known-sites</span> BQSR/Homo_sapiens_assembly38.known_indels.vcf.gz <span class="dt">\</span></span>
-<span id="cb5-7"><a href="align.html#cb5-7" aria-hidden="true" tabindex="-1"></a>  <span class="at">--known-sites</span> BQSR/Mills_and_1000G_gold_standard.indels.hg38.vcf.gz</span>
-<span id="cb5-8"><a href="align.html#cb5-8" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-9"><a href="align.html#cb5-9" aria-hidden="true" tabindex="-1"></a><span class="ex">java</span> <span class="at">-Xms2G</span> <span class="at">-Xmx2G</span> <span class="at">-jar</span> <span class="va">$GATK_JAR</span> ApplyBQSR <span class="dt">\</span></span>
-<span id="cb5-10"><a href="align.html#cb5-10" aria-hidden="true" tabindex="-1"></a>  <span class="at">-I</span> aligned_HG002_markdup.bam <span class="dt">\</span></span>
-<span id="cb5-11"><a href="align.html#cb5-11" aria-hidden="true" tabindex="-1"></a>  <span class="at">-R</span> <span class="va">$reference</span> <span class="dt">\</span></span>
-<span id="cb5-12"><a href="align.html#cb5-12" aria-hidden="true" tabindex="-1"></a>  <span class="at">--bqsr-recal-file</span> aligned_HG002_markdup_bqsr.report <span class="dt">\</span></span>
-<span id="cb5-13"><a href="align.html#cb5-13" aria-hidden="true" tabindex="-1"></a>  <span class="at">-O</span> aligned_HG002_markdup_bqsr.bam</span></code></pre></div>
+<div class="sourceCode" id="cb4"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb4-1"><a href="align.html#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="ex">java</span> <span class="at">-Xms4G</span> <span class="at">-Xmx4G</span> <span class="at">-jar</span> <span class="va">$GATK_JAR</span> BaseRecalibrator <span class="dt">\</span></span>
+<span id="cb4-2"><a href="align.html#cb4-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">-I</span> aligned_HG002_markdup.bam <span class="dt">\</span></span>
+<span id="cb4-3"><a href="align.html#cb4-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">-R</span> <span class="va">$reference</span> <span class="dt">\</span></span>
+<span id="cb4-4"><a href="align.html#cb4-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">-O</span> aligned_HG002_markdup_bqsr.report <span class="dt">\</span></span>
+<span id="cb4-5"><a href="align.html#cb4-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">--known-sites</span> BQSR/Homo_sapiens_assembly38.dbsnp138.vcf <span class="dt">\</span></span>
+<span id="cb4-6"><a href="align.html#cb4-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">--known-sites</span> BQSR/Homo_sapiens_assembly38.known_indels.vcf.gz <span class="dt">\</span></span>
+<span id="cb4-7"><a href="align.html#cb4-7" aria-hidden="true" tabindex="-1"></a>  <span class="at">--known-sites</span> BQSR/Mills_and_1000G_gold_standard.indels.hg38.vcf.gz</span>
+<span id="cb4-8"><a href="align.html#cb4-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-9"><a href="align.html#cb4-9" aria-hidden="true" tabindex="-1"></a><span class="ex">java</span> <span class="at">-Xms2G</span> <span class="at">-Xmx2G</span> <span class="at">-jar</span> <span class="va">$GATK_JAR</span> ApplyBQSR <span class="dt">\</span></span>
+<span id="cb4-10"><a href="align.html#cb4-10" aria-hidden="true" tabindex="-1"></a>  <span class="at">-I</span> aligned_HG002_markdup.bam <span class="dt">\</span></span>
+<span id="cb4-11"><a href="align.html#cb4-11" aria-hidden="true" tabindex="-1"></a>  <span class="at">-R</span> <span class="va">$reference</span> <span class="dt">\</span></span>
+<span id="cb4-12"><a href="align.html#cb4-12" aria-hidden="true" tabindex="-1"></a>  <span class="at">--bqsr-recal-file</span> aligned_HG002_markdup_bqsr.report <span class="dt">\</span></span>
+<span id="cb4-13"><a href="align.html#cb4-13" aria-hidden="true" tabindex="-1"></a>  <span class="at">-O</span> aligned_HG002_markdup_bqsr.bam</span></code></pre></div>
 </div>
-<div id="quality-control-of-alignment" class="section level2 hasAnchor" number="2.6">
-<h2><span class="header-section-number">2.6</span> Quality Control of Alignment<a href="align.html#quality-control-of-alignment" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<div id="quality-control-of-alignment" class="section level2 hasAnchor" number="2.5">
+<h2><span class="header-section-number">2.5</span> Quality Control of Alignment<a href="align.html#quality-control-of-alignment" class="anchor-section" aria-label="Anchor link to header"></a></h2>
 <p><a href="https://www.htslib.org/doc/samtools.html">samtools stats</a> collects statistics from BAM files and outputs in a text format.</p>
-<div class="sourceCode" id="cb6"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb6-1"><a href="align.html#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="ex">samtools</span> stats aligned_HG002_markdup_bqsr.bam <span class="op">&gt;</span> aligned_HG002_markdup_bqsr_stats.txt</span></code></pre></div>
+<div class="sourceCode" id="cb5"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb5-1"><a href="align.html#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="ex">samtools</span> stats aligned_HG002_markdup_bqsr.bam <span class="op">&gt;</span> aligned_HG002_markdup_bqsr_stats.txt</span></code></pre></div>
 <p><a href="https://github.com/brentp/mosdepth">Mosdepth</a> summarizes basic statistics of the alignment (number of reads, coverage, GC-content, etc.) and produces a number of useful graphs.</p>
-<div class="sourceCode" id="cb7"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb7-1"><a href="align.html#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="ex">module</span> load mugqic/mosdepth/0.3.4</span>
-<span id="cb7-2"><a href="align.html#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="ex">mosdepth</span> <span class="at">--by</span> <span class="va">$exome</span> HG002_mosdepth_output aligned_HG002_markdup_bqsr.bam</span></code></pre></div>
+<div class="sourceCode" id="cb6"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb6-1"><a href="align.html#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="ex">module</span> load mugqic/mosdepth/0.3.4</span>
+<span id="cb6-2"><a href="align.html#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="ex">mosdepth</span> <span class="at">--by</span> <span class="va">$exome</span> HG002_mosdepth_output aligned_HG002_markdup_bqsr.bam</span></code></pre></div>
 <p><a href="http://multiqc.info/">MultiQC</a> generates a single HTML report summarizing all samples in the project.</p>
-<div class="sourceCode" id="cb8"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb8-1"><a href="align.html#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="ex">module</span> load multiqc</span>
-<span id="cb8-2"><a href="align.html#cb8-2" aria-hidden="true" tabindex="-1"></a><span class="ex">multiqc</span> .</span></code></pre></div>
+<div class="sourceCode" id="cb7"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb7-1"><a href="align.html#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="ex">module</span> load multiqc</span>
+<span id="cb7-2"><a href="align.html#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="ex">multiqc</span> .</span></code></pre></div>
 
 </div>
 </div>

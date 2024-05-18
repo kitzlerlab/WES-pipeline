@@ -31,5 +31,5 @@ for (i in 1:nrow(sheets)) {
   conditionalFormatting(wb, sheets$names[i], cols = 1:ncol(table), rows = 1:(nrow(table)+1), rule = rule_even, style = posStyle)
 }
 
-saveWorkbook(wb, "result/AJ_pedigree_results_09_01_23.xlsx", overwrite = TRUE)
+saveWorkbook(wb, "result/AJ_pedigree_results_05_14_24.xlsx", overwrite = TRUE)
 ```

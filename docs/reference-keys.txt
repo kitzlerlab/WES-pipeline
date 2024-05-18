@@ -1,6 +1,5 @@
 overview
 align
-sarek-pipeline
 quality-control-of-raw-reads
 alignment
 mark-duplicates
@@ -10,6 +9,7 @@ calling
 snvindel-calling
 variant-filtration
 genotype-posteriors
+structural-variants
 benchmarking
 statistical-genetics
 phasing
@@ -18,6 +18,7 @@ runs-of-homozygosity
 linkage-analysis
 population-substructure
 variant-annotation
+variant-effect-predictor
 filtration
 de-novo-variants
 homozygous-variants

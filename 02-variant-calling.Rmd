@@ -2,7 +2,7 @@
 
 ## SNV/Indel Calling
 
-We call variants with GATK4 HaplotypeCaller.
+We call SNVs and indels with GATK4 HaplotypeCaller.
 
 ```{bash eval=FALSE}
 exome=sureselectV4_padded_hg38.bed
@@ -122,6 +122,25 @@ java -Xmx2g -jar $GATK_JAR CalculateGenotypePosteriors \
 -ped pedigree.ped \
 --supporting-callsets af-only-gnomad.hg38.vcf.gz \
 -O trio_refined.vcf.gzb
+```
+
+## Structural Variants
+
+We call structural variants with Manta.
+
+```{bash eval=FALSE}
+module load manta/1.6.0
+for name in $names
+do
+  mkdir "manta_${name}"
+  configManta.py \
+  --bam "BAM/${name}.recal.bam" \
+  --referenceFasta $reference \
+  --runDir manta \
+  --callRegions $exome \
+  --exome
+  manta_${name}/runWorkflow.py
+done
 ```
 
 ## Benchmarking

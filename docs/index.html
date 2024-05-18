@@ -4,18 +4,18 @@
 
   <meta charset="utf-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-  <title>Whole Exome Sequencing Platform</title>
+  <title>Whole Exome Sequencing Pipeline</title>
   <meta name="description" content="This is a pipeline for whole exome sequencing analysis." />
-  <meta name="generator" content="bookdown 0.35 and GitBook 2.6.7" />
+  <meta name="generator" content="bookdown 0.39 and GitBook 2.6.7" />
 
-  <meta property="og:title" content="Whole Exome Sequencing Platform" />
+  <meta property="og:title" content="Whole Exome Sequencing Pipeline" />
   <meta property="og:type" content="book" />
   
   <meta property="og:description" content="This is a pipeline for whole exome sequencing analysis." />
   
 
   <meta name="twitter:card" content="summary" />
-  <meta name="twitter:title" content="Whole Exome Sequencing Platform" />
+  <meta name="twitter:title" content="Whole Exome Sequencing Pipeline" />
   
   <meta name="twitter:description" content="This is a pipeline for whole exome sequencing analysis." />
   
@@ -23,7 +23,7 @@
 <meta name="author" content="Marc Henein and Zachary Sentell" />
 
 
-<meta name="date" content="2023-09-05" />
+<meta name="date" content="2024-05-17" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -161,24 +161,25 @@ div.csl-indent {
       <nav role="navigation">
 
 <ul class="summary">
-<li><a href="./">Whole Exome Sequencing Platform</a></li>
+<li><a href="./">Whole Exome Sequencing Pipeline</a></li>
+
 <li class="divider"></li>
 <li class="chapter" data-level="1" data-path="index.html"><a href="index.html"><i class="fa fa-check"></i><b>1</b> Overview</a></li>
 <li class="chapter" data-level="2" data-path="align.html"><a href="align.html"><i class="fa fa-check"></i><b>2</b> Pre-processing</a>
 <ul>
-<li class="chapter" data-level="2.1" data-path="align.html"><a href="align.html#sarek-pipeline"><i class="fa fa-check"></i><b>2.1</b> Sarek Pipeline</a></li>
-<li class="chapter" data-level="2.2" data-path="align.html"><a href="align.html#quality-control-of-raw-reads"><i class="fa fa-check"></i><b>2.2</b> Quality Control of Raw Reads</a></li>
-<li class="chapter" data-level="2.3" data-path="align.html"><a href="align.html#alignment"><i class="fa fa-check"></i><b>2.3</b> Alignment</a></li>
-<li class="chapter" data-level="2.4" data-path="align.html"><a href="align.html#mark-duplicates"><i class="fa fa-check"></i><b>2.4</b> Mark Duplicates</a></li>
-<li class="chapter" data-level="2.5" data-path="align.html"><a href="align.html#base-quality-score-recalibration"><i class="fa fa-check"></i><b>2.5</b> Base Quality Score Recalibration</a></li>
-<li class="chapter" data-level="2.6" data-path="align.html"><a href="align.html#quality-control-of-alignment"><i class="fa fa-check"></i><b>2.6</b> Quality Control of Alignment</a></li>
+<li class="chapter" data-level="2.1" data-path="align.html"><a href="align.html#quality-control-of-raw-reads"><i class="fa fa-check"></i><b>2.1</b> Quality Control of Raw Reads</a></li>
+<li class="chapter" data-level="2.2" data-path="align.html"><a href="align.html#alignment"><i class="fa fa-check"></i><b>2.2</b> Alignment</a></li>
+<li class="chapter" data-level="2.3" data-path="align.html"><a href="align.html#mark-duplicates"><i class="fa fa-check"></i><b>2.3</b> Mark Duplicates</a></li>
+<li class="chapter" data-level="2.4" data-path="align.html"><a href="align.html#base-quality-score-recalibration"><i class="fa fa-check"></i><b>2.4</b> Base Quality Score Recalibration</a></li>
+<li class="chapter" data-level="2.5" data-path="align.html"><a href="align.html#quality-control-of-alignment"><i class="fa fa-check"></i><b>2.5</b> Quality Control of Alignment</a></li>
 </ul></li>
 <li class="chapter" data-level="3" data-path="calling.html"><a href="calling.html"><i class="fa fa-check"></i><b>3</b> Variant Calling</a>
 <ul>
 <li class="chapter" data-level="3.1" data-path="calling.html"><a href="calling.html#snvindel-calling"><i class="fa fa-check"></i><b>3.1</b> SNV/Indel Calling</a></li>
 <li class="chapter" data-level="3.2" data-path="calling.html"><a href="calling.html#variant-filtration"><i class="fa fa-check"></i><b>3.2</b> Variant Filtration</a></li>
 <li class="chapter" data-level="3.3" data-path="calling.html"><a href="calling.html#genotype-posteriors"><i class="fa fa-check"></i><b>3.3</b> Genotype Posteriors</a></li>
-<li class="chapter" data-level="3.4" data-path="calling.html"><a href="calling.html#benchmarking"><i class="fa fa-check"></i><b>3.4</b> Benchmarking</a></li>
+<li class="chapter" data-level="3.4" data-path="calling.html"><a href="calling.html#structural-variants"><i class="fa fa-check"></i><b>3.4</b> Structural Variants</a></li>
+<li class="chapter" data-level="3.5" data-path="calling.html"><a href="calling.html#benchmarking"><i class="fa fa-check"></i><b>3.5</b> Benchmarking</a></li>
 </ul></li>
 <li class="chapter" data-level="4" data-path="statistical-genetics.html"><a href="statistical-genetics.html"><i class="fa fa-check"></i><b>4</b> Statistical Genetics</a>
 <ul>
@@ -190,12 +191,13 @@ div.csl-indent {
 </ul></li>
 <li class="chapter" data-level="5" data-path="variant-annotation.html"><a href="variant-annotation.html"><i class="fa fa-check"></i><b>5</b> Variant Annotation</a>
 <ul>
-<li class="chapter" data-level="5.1" data-path="variant-annotation.html"><a href="variant-annotation.html#filtration"><i class="fa fa-check"></i><b>5.1</b> Filtration</a></li>
-<li class="chapter" data-level="5.2" data-path="variant-annotation.html"><a href="variant-annotation.html#de-novo-variants"><i class="fa fa-check"></i><b>5.2</b> <em>De Novo</em> Variants</a></li>
-<li class="chapter" data-level="5.3" data-path="variant-annotation.html"><a href="variant-annotation.html#homozygous-variants"><i class="fa fa-check"></i><b>5.3</b> Homozygous Variants</a></li>
-<li class="chapter" data-level="5.4" data-path="variant-annotation.html"><a href="variant-annotation.html#compound-heterozygous-variants"><i class="fa fa-check"></i><b>5.4</b> Compound Heterozygous Variants</a></li>
-<li class="chapter" data-level="5.5" data-path="variant-annotation.html"><a href="variant-annotation.html#x-chromosome"><i class="fa fa-check"></i><b>5.5</b> X Chromosome</a></li>
-<li class="chapter" data-level="5.6" data-path="variant-annotation.html"><a href="variant-annotation.html#disease-genes"><i class="fa fa-check"></i><b>5.6</b> Disease Genes</a></li>
+<li class="chapter" data-level="5.1" data-path="variant-annotation.html"><a href="variant-annotation.html#variant-effect-predictor"><i class="fa fa-check"></i><b>5.1</b> Variant Effect Predictor</a></li>
+<li class="chapter" data-level="5.2" data-path="variant-annotation.html"><a href="variant-annotation.html#filtration"><i class="fa fa-check"></i><b>5.2</b> Filtration</a></li>
+<li class="chapter" data-level="5.3" data-path="variant-annotation.html"><a href="variant-annotation.html#de-novo-variants"><i class="fa fa-check"></i><b>5.3</b> <em>De Novo</em> Variants</a></li>
+<li class="chapter" data-level="5.4" data-path="variant-annotation.html"><a href="variant-annotation.html#homozygous-variants"><i class="fa fa-check"></i><b>5.4</b> Homozygous Variants</a></li>
+<li class="chapter" data-level="5.5" data-path="variant-annotation.html"><a href="variant-annotation.html#compound-heterozygous-variants"><i class="fa fa-check"></i><b>5.5</b> Compound Heterozygous Variants</a></li>
+<li class="chapter" data-level="5.6" data-path="variant-annotation.html"><a href="variant-annotation.html#x-chromosome"><i class="fa fa-check"></i><b>5.6</b> X Chromosome</a></li>
+<li class="chapter" data-level="5.7" data-path="variant-annotation.html"><a href="variant-annotation.html#disease-genes"><i class="fa fa-check"></i><b>5.7</b> Disease Genes</a></li>
 </ul></li>
 <li class="chapter" data-level="6" data-path="summary.html"><a href="summary.html"><i class="fa fa-check"></i><b>6</b> Summary</a></li>
 <li class="chapter" data-level="" data-path="references.html"><a href="references.html"><i class="fa fa-check"></i>References</a></li>
@@ -208,7 +210,7 @@ div.csl-indent {
       <div class="body-inner">
         <div class="book-header" role="navigation">
           <h1>
-            <i class="fa fa-circle-o-notch fa-spin"></i><a href="./">Whole Exome Sequencing Platform</a>
+            <i class="fa fa-circle-o-notch fa-spin"></i><a href="./">Whole Exome Sequencing Pipeline</a>
           </h1>
         </div>
 
@@ -217,20 +219,21 @@ div.csl-indent {
 
             <section class="normal" id="section-">
 <div id="header">
-<h1 class="title">Whole Exome Sequencing Platform</h1>
+<h1 class="title">Whole Exome Sequencing Pipeline</h1>
 <p class="author"><em>Marc Henein and Zachary Sentell</em></p>
-<p class="date"><em>2023-09-05</em></p>
+<p class="date"><em>2024-05-17</em></p>
 </div>
 <div id="overview" class="section level1 hasAnchor" number="1">
 <h1><span class="header-section-number">1</span> Overview<a href="index.html#overview" class="anchor-section" aria-label="Anchor link to header"></a></h1>
-<p>This is a pipeline for whole exome sequencing analysis to identify the genetic causes of Mendelian disorders. It was assembled in the Kitzler lab at the McGill University Health Centre and run on the Compute Canada servers. It includes the following steps:</p>
+<p>This is a whole exome sequencing pipeline to identify the genetic causes of Mendelian disorders in singletons, trios and larger pedigrees. It was assembled in the Kitzler lab at the McGill University Health Centre and run on the Compute Canada servers. It includes the following steps:</p>
 <ol style="list-style-type: decimal">
 <li>Pre-processing of raw reads.</li>
-<li>Germline variant calling for SNVs and indels.</li>
+<li>Germline variant calling for SNVs, indels and structural variants.</li>
+<li>Pedigree-based, read-based and statistical phasing.</li>
 <li>Estimation of kinship coefficients to verify pedigree relationships.</li>
 <li>Variant annotation and trio analysis to identify disease-causing variants.</li>
 </ol>
-<p>We follow <a href="https://gatk.broadinstitute.org/hc/en-us/sections/360007226651-Best-Practices-Workflows">GATK best practices</a> for pre-processing and variant calling. We execute pre-processing steps with the <a href="https://nf-co.re/sarek/3.2.3">nf-core/sarek pipeline</a>. We use <a href="https://whatshap.readthedocs.io/en/latest/">WhatsHap</a> to phase variants, <a href="https://bioinf.wehi.edu.au/software/linkdatagen/">Linkdatagen</a> to select SNPs in approximate linkage equilibrium and <a href="https://openmendel.github.io/">OpenMendel</a> and <a href="https://zzz.bwh.harvard.edu/plink/">PLINK</a> to estimate kinship coefficients. We use <a href="https://useast.ensembl.org/info/docs/tools/vep/script/index.html">Ensembl VEP</a> to annotate variants. We provide <em>R</em> scripts to identify phased compound heterozygous variants as well as <em>de novo</em>, homozygous and unphased compound heterozygous variants. We output the results to Excel in a readable format.</p>
+<p>We follow <a href="https://gatk.broadinstitute.org/hc/en-us/sections/360007226651-Best-Practices-Workflows">GATK best practices</a> for pre-processing and SNV/indel calling. We use <a href="https://github.com/Illumina/manta">Manta</a> to call structural variants, <a href="https://whatshap.readthedocs.io/en/latest/">WhatsHap</a> to phase variants, <a href="https://bioinf.wehi.edu.au/software/linkdatagen/">Linkdatagen</a> to select SNPs in approximate linkage equilibrium and <a href="https://openmendel.github.io/">OpenMendel</a> and <a href="https://zzz.bwh.harvard.edu/plink/">PLINK</a> to estimate kinship coefficients. We use <a href="https://useast.ensembl.org/info/docs/tools/vep/script/index.html">Ensembl VEP</a> to annotate variants. We provide <em>R</em> scripts to identify <em>de novo</em> variants as well as compound heterozygous variants <em>in trans</em> within a gene and to fetch data from the <a href="https://gnomad.broadinstitute.org/api/">gnomAD API</a>, in particular homozygote counts and phasing estimates based on the EM algorithm. We output the results to Excel in a readable format.</p>
 <p>We illustrate the expected output and benchmark the pipeline using Illumina paired-end WES data from the <a href="https://www.nist.gov/programs-projects/genome-bottle">GIAB</a> Ashkenazi Jewish reference trio (<a href="https://www.ncbi.nlm.nih.gov/sra/?term=SRR2962669">SRR2962669</a>, <a href="https://www.ncbi.nlm.nih.gov/sra/?term=SRR2962692">SRR2962692</a>, <a href="https://www.ncbi.nlm.nih.gov/sra/?term=SRR2962694">SRR2962694</a>). Bash scripts submitted to Slurm as well as associated data and results can be found on the <a href="https://github.com/kitzlerlab/WES-platform">GitHub repository</a>.</p>
 
 </div>

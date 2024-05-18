@@ -1,5 +1,7 @@
 # Variant Annotation
 
+## Variant Effect Predictor
+
 We annotate the variants with VEP for molecular consequence, allele frequency, clinical variant databases, i.e. Clinvar, Mastermind, and a set of pathogenicity prediction tools, i.e., CADD, PrimateAI, SpliceAI, EVE, MutationTaster, REVEL.
 
 ```{bash eval=FALSE}
@@ -82,19 +84,33 @@ wh_geno01 <- wh_geno0 %>%
   mutate(counter = row_number()) %>%
   ungroup() %>%
   dplyr::filter(FILTER=="PASS")
-# Convert variant formatting to VEP format. Add 1 to indel start site.
+# Convert variant to VEP format. Add 1 to indel start site.
 wh_geno01 <- wh_geno01 %>% 
   mutate(Location = ifelse(
     width==1, ifelse(
       nchar(ALT)==1, paste(seqnames,start,sep=":"), paste0(seqnames,":",start,"-",start+1)), ifelse(
         start+1==end, paste0(seqnames,":",start+1), paste0(seqnames,":",start+1,"-",end)))) %>% 
   mutate(Allele = ifelse(substr(REF,1,1)==substr(ALT,1,1), substr(ALT,2,nchar(ALT)), ALT))
+# Convert variant to gnomAD format.
+trim <- function(a1,a2) {
+  b1 <- str_sub(a1,2,-1)
+  b2 <- str_sub(a2,2,-1)
+  repeat {
+    if (nchar(b1)==0 | nchar(b2)==0) break
+    if (str_sub(b1,-1,-1)!=str_sub(b2,-1,-1)) break
+    b1 <- str_sub(b1,1,-2)
+    b2 <- str_sub(b2,1,-2)
+  }
+  paste(str_sub(a1,1,1),b1,"-",str_sub(a2,1,1),b2,sep="")
+}
+wh_geno01 <- wh_geno01 %>% rowwise %>% 
+  dplyr::mutate(gnomADid = paste(substr(seqnames,4,5),start,trim(REF,ALT),sep="-"))
 wh_geno01$Allele[wh_geno01$Allele==""] <- "-"
 # Overlapping deletions
 wh_geno_overlap <- wh_geno01 %>% dplyr::filter(ALT=="")
 wh_geno1 <- wh_geno01 %>% dplyr::filter(ALT!="")
 # Select columns
-wh_geno1 <- wh_geno1[c(27,28,11:25,26)]
+wh_geno1 <- wh_geno1[c(27,28,11:25,26,29)]
 # Select X chromosome
 wh_geno_X <- wh_geno1 %>% dplyr::filter(str_detect(Location,"chrX"))
 # Select autosomal variants
@@ -109,24 +125,25 @@ library(rmarkdown)
 paged_table(head(wh_geno_auto))
 ```
 
-Manually remove the hashtag before the line of column titles in ensembl_ann_vep_filt.txt. We load the VEP annotated variants into R and select variants with an allele frequency \<0.01 that fall in RefSeq transcripts.
+We load the VEP annotated variants into R and select variants with an allele frequency \<0.01 that fall in RefSeq transcripts.
 
 ```{r, message=FALSE, warning=FALSE}
-result <- read_table("data/AJ_ensembl_ann_vep_filt_09_01_23.txt", comment = "#", na="-", col_types = list(
-  Uploaded_variation= col_factor(), Gene=col_factor(), Feature=col_factor(), MANE_PLUS_CLINICAL = col_character(), 
+result <- read_table("data/AJ_ensembl_ann_vep_filt_09_01_23.txt", comment = "##", na="-", col_types = list(
+  `#Uploaded_variation`=col_factor(), Gene=col_factor(), Feature=col_factor(), MANE_PLUS_CLINICAL = col_character(), 
   MOTIF_NAME = col_character(), HIGH_INF_POS = col_character(), TRANSCRIPTION_FACTORS = col_character(), 
-  PUBMED=col_character(), MOTIF_POS = col_character()))
+  PUBMED=col_character(), MOTIF_POS = col_character())) %>%
+  dplyr::rename(Uploaded_variation=`#Uploaded_variation`)
 result$Allele[is.na(result$Allele)] <- "-"
 result1 <- result %>% as_tibble %>% left_join(wh_geno1, by = c("Location","Allele"))
 refseq0 <- result1 %>% 
   dplyr::filter(SOURCE == "RefSeq") %>% 
   dplyr::filter(gnomADe_AF<=0.01|is.na(gnomADe_AF)) %>% 
-  dplyr::filter(!(is.na(gnomADe_AF) & gnomADg_AF > 0.01)) %>%
+  dplyr::filter(gnomADg_AF<=0.01|is.na(gnomADg_AF)) %>%
   dplyr::filter(!(str_detect(Feature,"XM"))) %>%
   select_if(~any(!is.na(.)))
 ```
 
-We add gene-level information from OMIM, Human Phenotype Ontology, ClinGen, GenCC, Orphanet.
+We add gene-level information from OMIM, Human Phenotype Ontology (HPO), ClinGen, GenCC, Orphanet. We select HPO terms for each gene that are associated with a particular phenotype, in this case, kidney disease.
 
 ```{r, message=FALSE, warning=FALSE}
 library(ontologyIndex)
@@ -203,7 +220,7 @@ refseq01 <- refseq0 %>%
   left_join(gencc_def, by=join_by(HGNC_ID==gene_curie)) %>%
   left_join(gencc_strong, by=join_by(HGNC_ID==gene_curie)) %>%
   left_join(orphanet, by=join_by(HGNC_ID==gene_curie)) %>%
-  dplyr::select(SYMBOL, Uploaded_variation, Location, Feature, HGVSc,	HGVSp, Consequence, ZYG, EXON,	INTRON,	gnomADe_AF,	gnomADg_AF,	MAX_AF, MAX_AF_POPS,	ClinVar,	ClinVar_CLNSIG,	OMIM_Phenotypes, renal_hpo_term, extrarenal_hpo_term,	REVEL,	SIFT,	PolyPhen,	CADD_PHRED,	PrimateAI,	SpliceAI_pred,	EVE_CLASS,	EVE_SCORE,	MutationTaster_pred,	MutationTaster_score,	orphanet_disease,	orphanet_moi,	Mastermind_MMID3,	Existing_variation,	PUBMED,	mother,	father,	proband, Allele,	counter, AD_ref_mother, AD_ref_father, AD_ref_proband,	AD_alt_mother, AD_alt_father, AD_alt_proband, GQ_mother,	GQ_father,	GQ_proband,	PS_mother,	PS_father,	PS_proband,	CANONICAL,	MANE_SELECT,	MANE_PLUS_CLINICAL,	IMPACT,	Gene, HGNC_ID, Amino_acids, Codons, AF,	AFR_AF,	AMR_AF,	EAS_AF,	EUR_AF,	SAS_AF,	gnomADe_AFR_AF,	gnomADe_AMR_AF,	gnomADe_ASJ_AF,	gnomADe_EAS_AF,	gnomADe_FIN_AF,	gnomADe_NFE_AF,	gnomADe_OTH_AF,	gnomADe_SAS_AF,	gnomADg_AFR_AF,	gnomADg_AMI_AF,	gnomADg_AMR_AF,	gnomADg_ASJ_AF,	gnomADg_EAS_AF,	gnomADg_FIN_AF,	gnomADg_MID_AF,	gnomADg_NFE_AF,	gnomADg_OTH_AF,	gnomADg_SAS_AF)
+  dplyr::select(SYMBOL, Uploaded_variation, Location, Feature, HGVSg, HGVSc,	HGVSp, Consequence, ZYG, EXON,	INTRON,	gnomADe_AF,	gnomADg_AF,	MAX_AF, MAX_AF_POPS,	ClinVar,	ClinVar_CLNSIG,	OMIM_Phenotypes, renal_hpo_term, extrarenal_hpo_term,	REVEL,	SIFT,	PolyPhen,	CADD_PHRED,	PrimateAI,	SpliceAI_pred,	EVE_CLASS,	EVE_SCORE,	MutationTaster_pred,	MutationTaster_score,	orphanet_disease,	orphanet_moi,	Mastermind_MMID3,	Existing_variation,	PUBMED,	mother,	father,	proband, Allele, counter, AD_ref_mother, AD_ref_father, AD_ref_proband,	AD_alt_mother, AD_alt_father, AD_alt_proband, GQ_mother,	GQ_father,	GQ_proband,	PS_mother,	PS_father,	PS_proband,	CANONICAL,	MANE_SELECT,	MANE_PLUS_CLINICAL,	IMPACT,	Gene, HGNC_ID, Amino_acids, Codons, AF,	AFR_AF,	AMR_AF,	EAS_AF,	EUR_AF,	SAS_AF,	gnomADe_AFR_AF,	gnomADe_AMR_AF,	gnomADe_ASJ_AF,	gnomADe_EAS_AF,	gnomADe_FIN_AF,	gnomADe_NFE_AF,	gnomADe_OTH_AF,	gnomADe_SAS_AF,	gnomADg_AFR_AF,	gnomADg_AMI_AF,	gnomADg_AMR_AF,	gnomADg_ASJ_AF,	gnomADg_EAS_AF,	gnomADg_FIN_AF,	gnomADg_MID_AF,	gnomADg_NFE_AF,	gnomADg_OTH_AF,	gnomADg_SAS_AF, VARIANT_CLASS, gnomADid)
 # X chromosome
 refseq_X <- refseq01 %>% dplyr::filter(str_detect(Uploaded_variation,"X"))
 # Autosomal chromosomes
@@ -254,7 +271,7 @@ geno_novo_not_ref_high_qual <- geno_novo_not_ref %>% dplyr::filter(GQ_mother>=30
 ```
 
 ```{r echo=FALSE}
-paged_table(head(geno_novo_not_ref_high_qual))
+paged_table(head(dplyr::select(geno_novo_not_ref_high_qual, Location, Allele, mother, father, proband, counter)))
 ```
 
 We select *de novo* variants found in the filtered VEP annotation. For each variant, we chose a single gene transcript that contains the variant, prioritizing canonical and curated transcripts.
@@ -271,7 +288,7 @@ prob_novo_high_qual <- prob_novo_high_qual %>% group_by(Uploaded_variation) %>%
 ```
 
 ```{r echo=FALSE}
-paged_table(head(prob_novo_high_qual))
+paged_table(head(dplyr::select(prob_novo_high_qual,SYMBOL,Uploaded_variation,HGVSc, HGVSp, mother, father, proband, counter)))
 ```
 
 ## Homozygous Variants
@@ -306,8 +323,55 @@ prob_hom <- prob_hom %>% group_by(Uploaded_variation) %>%
   dplyr::filter(Feature == Feature[1])
 ```
 
-```{r echo=FALSE}
-paged_table(head(prob_hom))
+For each of these variants, we query the gnomAD database for the number of individuals that are homozygous for that variant.
+
+```{r gnomAD_hom, message=FALSE, warning=FALSE}
+library(ghql)
+library(jsonlite)
+token <- Sys.getenv("GNOMAD_TOKEN")
+con <- GraphqlClient$new(
+  url = "https://gnomad.broadinstitute.org/api",
+  headers = list(Authorization = paste0("Bearer ", token))
+)
+qry <- Query$new()
+qry$query('homozygous',
+'query Variant($var: String!){
+  variant(variantId: $var, dataset: gnomad_r4) {
+    exome {
+      homozygote_count
+    }
+    genome {
+      homozygote_count
+    }
+  }
+}')
+gnomADid <- prob_hom$gnomADid
+s <- tibble(gnomADid=NA, gnomADe_hom=NA, gnomADg_hom=NA)
+for (i in gnomADid) {
+  variables <- list(var = i)
+  tries <- 1
+  repeat {
+    x <- try(con$exec(qry$queries$homozygous, variables), silent = TRUE)
+    if (!is(x, 'try-error')) {
+      x1 <- jsonlite::fromJSON(x)$data$variant$exome$homozygote_count
+      x2 <- jsonlite::fromJSON(x)$data$variant$genome$homozygote_count
+      message(paste(tries,"success", collapse=" "))
+      break
+    }
+    Sys.sleep(2*tries)
+    message(tries)
+    tries <- tries + 1
+  }
+  if (is.null(x1)) x1 <- NA
+  if (is.null(x2)) x2 <- NA
+  s <- s %>% add_row(gnomADid=variables$var,gnomADe_hom=x1, gnomADg_hom=x2)
+}
+prob_hom <- left_join(prob_hom, s) %>% 
+  dplyr::relocate(c(gnomADe_hom,gnomADg_hom),.after=MAX_AF_POPS)
+```
+
+```{r echo=FALSE, warning=FALSE}
+paged_table(head(dplyr::select(prob_hom, SYMBOL, Uploaded_variation, HGVSc, HGVSp, gnomADe_hom, gnomADg_hom, proband, counter)))
 ```
 
 ## Compound Heterozygous Variants
@@ -334,24 +398,141 @@ prob_comp_het2 <- prob_comp_het %>% group_by(Gene) %>%
   dplyr::filter(Feature == Feature[1])
 ```
 
+```{r echo=FALSE, warning=FALSE}
+paged_table(head(dplyr::select(ungroup(prob_comp_het2),SYMBOL,Uploaded_variation,HGVSc,HGVSp,proband, counter, PS_proband)))
+```
+
+For two variants within a gene that cannot be phased with trio data, we can estimate phase using EM-based haplotype estimation from the gnomAD database.
+
+```{r gnomAD_comp_het, message=FALSE}
+# Obtain the GRCh37 variant ID to query gnomAD
+grch38id <- prob_2plus_het2$gnomADid
+qry$query('liftover',
+'query liftOver($varID: String!){
+  liftover(liftover_variant_id: $varID, reference_genome:GRCh38) {
+    source {
+      variant_id
+    }
+  }
+}')
+grch37id <- c()
+for (i in grch38id) {
+  variables <- list(varID = i)
+  tries <- 1
+  repeat {
+    x <- try(con$exec(qry$queries$liftover, variables), silent = TRUE)
+    if (!is(x, 'try-error')) {
+      x <- jsonlite::fromJSON(x)$data$liftover$source$variant_id 
+      message(paste(tries,"success", collapse=" "))
+      break
+    }
+    Sys.sleep(2*tries)
+    message(tries)
+    tries <- tries + 1
+  }
+  if (is.null(x)) x <- NA
+  grch37id <- append(grch37id, x)
+}
+liftover <- tibble(gnomADid=grch38id, grch37id)
+prob_2plus_het2 <- left_join(prob_2plus_het2, liftover)
+# Obtain probability that two variants within a gene are compound heterozygous and phase variants using cutoff of <0.2 for cis and >0.55 for trans
+qry$query('coocurrence',
+'query Coocurrence($var1: String!, $var2: String!){
+  variant_cooccurrence(dataset: gnomad_r2_1, variants: [$var1, $var2]) {
+    p_compound_heterozygous
+  }
+}'
+)
+prob_2plus_het_gnom <- prob_2plus_het2 %>% 
+  dplyr::filter(!is.na(grch37id)) %>%
+  group_by(SYMBOL) %>%
+  dplyr::filter(n()!=1)
+s <- tibble(grch37id=NA, gnomAD_A=NA, gnomAD_B=NA, gnomAD_PS=NA)
+r <- tibble(grch37id=NA, gnomAD_cis=NA, gnomAD_trans=NA)
+for (a in unique(prob_2plus_het_gnom$SYMBOL)) {
+  var <- prob_2plus_het_gnom[prob_2plus_het_gnom$SYMBOL==a,]$grch37id
+  sub <- tibble(grch37id=var, gnomAD_A=NA, gnomAD_B=NA, gnomAD_PS=NA)
+  sub$gnomAD_A[1] <- 1
+  sub$gnomAD_PS[1] <- 1
+  for (i in 1:(length(var)-1)) {
+    c <- c()
+    t <- c()
+    for (j in (i+1):length(var)) {
+      variables <- list(var1 = var[i], var2 = var[j])
+      tries <- 1
+      repeat {
+        y <- try(con$exec(qry$queries$coocurrence, variables), silent = TRUE)
+        if (!is(y, 'try-error')) {
+          y <- jsonlite::fromJSON(y)$data$variant_cooccurrence$p_compound_heterozygous
+          message(paste(tries,"success", collapse=" "))
+        break
+        }
+      Sys.sleep(2*tries)
+      message(tries)
+      tries <- tries + 1
+      }
+      if (is.null(y)) y <- "NA"
+      if (y<0.2) c <- append(c, paste0(variables$var2," (",round(y,digits=2),")"))
+      if (y>0.55 & y!="NA") t <- append(t, paste0(variables$var2," (",round(y,digits=2),")"))
+      if (!is.na(sub[[i,"gnomAD_A"]]) & is.na(sub[[i,"gnomAD_B"]])) {
+        if (y<0.2) {
+          sub$gnomAD_A[j] <- i
+          sub$gnomAD_PS[j] <- sub$gnomAD_PS[i]
+        }
+        if (y>0.55 & y!="NA") {
+          sub$gnomAD_B[j] <- i
+          sub$gnomAD_PS[j] <- sub$gnomAD_PS[i]
+        }
+      }
+      if (!is.na(sub[[i,"gnomAD_B"]]) & is.na(sub[[i,"gnomAD_A"]])) {
+        if (y<0.2) {
+          sub$gnomAD_B[j] <- i
+          sub$gnomAD_PS[j] <- sub$gnomAD_PS[i]
+        }
+        if (y>0.55 & y!="NA") {
+          sub$gnomAD_A[j] <- i
+          sub$gnomAD_PS[j] <- sub$gnomAD_PS[i]
+        }
+      }
+      if (is.na(sub[[i,"gnomAD_A"]]) & is.na(sub[[i,"gnomAD_B"]])) {
+        sub$gnomAD_A[i] <- i
+        sub$gnomAD_PS[i] <- i
+        if (y<0.2) { 
+          sub$gnomAD_A[j] <- i
+          sub$gnomAD_PS[j] <- i
+        }
+        if (y>0.55 & y!="NA") {
+          sub$gnomAD_B[j] <- i
+          sub$gnomAD_PS[j] <- i
+        }
+      }  
+    }
+    r <- r %>% add_row(grch37id=var[i], gnomAD_cis=str_flatten_comma(c), gnomAD_trans=str_flatten_comma(t))
+  }
+  s <- rbind(s,sub)
+}
+prob_2plus_het2 <- prob_2plus_het2 %>% left_join(r) %>% left_join(s) %>% 
+  dplyr::relocate(c(gnomAD_A,gnomAD_B,gnomAD_PS), .after=PS_proband)
+```
+
 ```{r echo=FALSE}
-paged_table(head(prob_comp_het2))
+paged_table(dplyr::select(ungroup(dplyr::filter(prob_2plus_het2,SYMBOL=="HLA-DQA1")),SYMBOL,Uploaded_variation,HGVSc,HGVSp,proband,PS_proband,gnomAD_A,gnomAD_B, gnomAD_PS, gnomAD_cis, gnomAD_trans))
 ```
 
 ## X Chromosome
 
-We remove X chromosome calls that are "heterozygous" for male individuals, proband and father.
+We remove X chromosome calls that are "heterozygous" for male individuals, i.e., proband and father. However, some of these calls may be correct if they lie in the pseudoautosomal region.
 
 ```{r, message=FALSE, warning=FALSE}
 wh_geno_X_filt <- wh_geno_X %>% 
   dplyr::filter(( substr(proband,1,1)==substr(proband,3,3) & substr(father,1,1)==substr(father,3,3)))
-prob_X <- inner_join(refseq_X, wh_geno_X) %>% group_by(Gene) %>% 
+prob_X <- inner_join(refseq_X, wh_geno_X_filt) %>% group_by(Gene) %>% 
   arrange(desc(CANONICAL), as.character(Feature),.by_group = T) %>% 
   dplyr::filter(Feature == Feature[1])
 ```
 
-```{r echo=FALSE}
-paged_table(head(prob_X))
+```{r echo=FALSE,warning=FALSE}
+paged_table(head(dplyr::select(ungroup(prob_X), SYMBOL, Uploaded_variation,HGVSc,HGVSp,mother,father,proband, counter)))
 ```
 
 ## Disease Genes
@@ -364,7 +545,7 @@ refseq2 <- refseq01 %>% group_by(Uploaded_variation) %>%
   dplyr::filter(Feature == Feature[1])
 ```
 
-We select variants that fall in green genes from the UK PanelApp renal broad superpanel.
+As an example, we select variants that fall in kidney disease genes, i.e., green genes from the UK PanelApp renal broad superpanel and all genes from the Australia PanelApp kidneyome superpanel.
 
 ```{r, message=FALSE, warning=FALSE}
 # UK Panel App
@@ -382,8 +563,8 @@ panel_au <- read_tsv("data/Kidneyome_SuperPanel.tsv") %>%
 refseq_au <- refseq2 %>% inner_join(panel_au, join_by(HGNC_ID==HGNC))
 ```
 
-```{r echo=FALSE}
-paged_table(head(refseq_au))
+```{r echo=FALSE,warning=FALSE}
+paged_table(head(dplyr::select(refseq_au,SYMBOL,Uploaded_variation,HGVSg,HGVSc,Status)))
 ```
 
 We combine annotations into a single table.
