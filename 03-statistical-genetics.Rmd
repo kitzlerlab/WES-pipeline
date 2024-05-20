@@ -75,7 +75,7 @@ using MendelKinship, CSV
 Kinship("control_compare.txt")
 ```
 
-We obtain the following results for the AJ reference trio using PLINK. PI_HAT is the estimated kinship coefficient between individuals IID1 and IID2. We note that the estimated kinship coefficient between individuals HG003 and HG004, which equals the the inbreeding coefficient of their son HG002, is 0.
+We obtain the following results for the AJ reference trio using PLINK. PI_HAT is two times the estimated kinship coefficient between individuals IID1 and IID2. We note that the estimated kinship coefficient between individuals HG003 and HG004, which equals the the inbreeding coefficient of their son HG002, is 0.
 
 | IID1 | IID2 | RT | EZ | Z0 | Z1 | Z2 | PI_HAT | DST | IBS0 | IBS1 | IBS2 |
 | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
