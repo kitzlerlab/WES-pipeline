@@ -50,7 +50,7 @@ freq_pl <- map %>% left_join(ord, by = "SNP") %>%
 write_delim(freq_pl, "result/freq_pl.frq", delim = " ")
 ```
 
-```{r echo=FALSE}
+```{r echo=FALSE, warning=FALSE}
 library(rmarkdown)
 paged_table(head(freq_pl))
 ```

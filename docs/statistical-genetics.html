@@ -259,20 +259,19 @@ div.csl-indent {
 <span id="cb3-7"><a href="statistical-genetics.html#cb3-7" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">select</span>(CHR, SNP, A1, A2, <span class="st">`</span><span class="at">Allele freq</span><span class="st">`</span>, NCHROBS) <span class="sc">%&gt;%</span> </span>
 <span id="cb3-8"><a href="statistical-genetics.html#cb3-8" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">rename</span>(<span class="at">MAF =</span> <span class="st">`</span><span class="at">Allele freq</span><span class="st">`</span>)</span>
 <span id="cb3-9"><a href="statistical-genetics.html#cb3-9" aria-hidden="true" tabindex="-1"></a><span class="fu">write_delim</span>(freq_pl, <span class="st">&quot;result/freq_pl.frq&quot;</span>, <span class="at">delim =</span> <span class="st">&quot; &quot;</span>)</span></code></pre></div>
-<pre><code>## Warning: package &#39;rmarkdown&#39; was built under R version 4.3.1</code></pre>
 <div data-pagedtable="false">
 <script data-pagedtable-source type="application/json">
 {"columns":[{"label":["CHR"],"name":[1],"type":["dbl"],"align":["right"]},{"label":["SNP"],"name":[2],"type":["chr"],"align":["left"]},{"label":["A1"],"name":[3],"type":["chr"],"align":["left"]},{"label":["A2"],"name":[4],"type":["chr"],"align":["left"]},{"label":["MAF"],"name":[5],"type":["dbl"],"align":["right"]},{"label":["NCHROBS"],"name":[6],"type":["chr"],"align":["left"]}],"data":[{"1":"1","2":"rs2905036","3":"1","4":"2","5":"0.000","6":"300"},{"1":"1","2":"rs4074137","3":"1","4":"2","5":"0.623","6":"300"},{"1":"1","2":"rs7515488","3":"1","4":"2","5":"0.853","6":"300"},{"1":"1","2":"rs7519837","3":"1","4":"2","5":"0.695","6":"300"},{"1":"1","2":"rs2803337","3":"1","4":"2","5":"0.491","6":"300"},{"1":"1","2":"rs2503701","3":"1","4":"2","5":"0.394","6":"300"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
   </script>
 </div>
 <p>Alternatively, with a sufficient number of samples, we can estimate the linkage disequilibrium between alleles and remove correlated SNPs using PLINK.</p>
-<div class="sourceCode" id="cb5"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb5-1"><a href="statistical-genetics.html#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="ex">plink</span> <span class="at">--file</span> data <span class="at">--indep</span> 50 5 2</span></code></pre></div>
+<div class="sourceCode" id="cb4"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb4-1"><a href="statistical-genetics.html#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="ex">plink</span> <span class="at">--file</span> data <span class="at">--indep</span> 50 5 2</span></code></pre></div>
 <p>We then calculate the empirical kinship coefficient by estimating identity by descent based on identity by state and population allele frequencies <span class="citation">(<a href="references.html#ref-lange2002mathematical" role="doc-biblioref">Lange 2002</a>)</span>. We run this calculation in PLINK.</p>
-<div class="sourceCode" id="cb6"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb6-1"><a href="statistical-genetics.html#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="ex">module</span> load plink/1.9b_6.21-x86_64</span>
-<span id="cb6-2"><a href="statistical-genetics.html#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="ex">plink</span> <span class="at">--file</span> plink <span class="at">--genome</span> full <span class="at">--read-freq</span> freq_pl.frq</span></code></pre></div>
+<div class="sourceCode" id="cb5"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb5-1"><a href="statistical-genetics.html#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="ex">module</span> load plink/1.9b_6.21-x86_64</span>
+<span id="cb5-2"><a href="statistical-genetics.html#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="ex">plink</span> <span class="at">--file</span> plink <span class="at">--genome</span> full <span class="at">--read-freq</span> freq_pl.frq</span></code></pre></div>
 <p>We also run this calculation using MendelKinship from the OpenMendel project.</p>
-<div class="sourceCode" id="cb7"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb7-1"><a href="statistical-genetics.html#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="ex">using</span> MendelKinship, CSV</span>
-<span id="cb7-2"><a href="statistical-genetics.html#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="ex">Kinship</span><span class="er">(</span><span class="st">&quot;control_compare.txt&quot;</span><span class="kw">)</span></span></code></pre></div>
+<div class="sourceCode" id="cb6"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb6-1"><a href="statistical-genetics.html#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="ex">using</span> MendelKinship, CSV</span>
+<span id="cb6-2"><a href="statistical-genetics.html#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="ex">Kinship</span><span class="er">(</span><span class="st">&quot;control_compare.txt&quot;</span><span class="kw">)</span></span></code></pre></div>
 <p>We obtain the following results for the AJ reference trio using PLINK. PI_HAT is two times the estimated kinship coefficient between individuals IID1 and IID2. We note that the estimated kinship coefficient between individuals HG003 and HG004, which equals the the inbreeding coefficient of their son HG002, is 0.</p>
 <table style="width:100%;">
 <colgroup>
@@ -367,20 +366,20 @@ div.csl-indent {
 <div id="linkage-analysis" class="section level2 hasAnchor" number="4.4">
 <h2><span class="header-section-number">4.4</span> Linkage Analysis<a href="statistical-genetics.html#linkage-analysis" class="anchor-section" aria-label="Anchor link to header"></a></h2>
 <p>Using the same set of SNPs in linkage equillibrium, we can run linkage analysis on appropriately chosen pedigrees using OpenMendel for two-point linkage or multipoint linkage analysis.</p>
-<div class="sourceCode" id="cb8"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb8-1"><a href="statistical-genetics.html#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Two-point linkage analysis</span></span>
-<span id="cb8-2"><a href="statistical-genetics.html#cb8-2" aria-hidden="true" tabindex="-1"></a><span class="ex">using</span> MendelTwoPointLinkage, CSV</span>
-<span id="cb8-3"><a href="statistical-genetics.html#cb8-3" aria-hidden="true" tabindex="-1"></a><span class="ex">TwoPointLinkage</span><span class="er">(</span><span class="st">&quot;Control_file.txt&quot;</span><span class="kw">)</span></span>
-<span id="cb8-4"><a href="statistical-genetics.html#cb8-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb8-5"><a href="statistical-genetics.html#cb8-5" aria-hidden="true" tabindex="-1"></a><span class="co"># Multipoint linkage analysis</span></span>
-<span id="cb8-6"><a href="statistical-genetics.html#cb8-6" aria-hidden="true" tabindex="-1"></a><span class="ex">using</span> MendelLocationScores, CSV</span>
-<span id="cb8-7"><a href="statistical-genetics.html#cb8-7" aria-hidden="true" tabindex="-1"></a><span class="ex">LocationScores</span><span class="er">(</span><span class="st">&quot;Control_file.txt&quot;</span><span class="kw">)</span></span></code></pre></div>
+<div class="sourceCode" id="cb7"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb7-1"><a href="statistical-genetics.html#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Two-point linkage analysis</span></span>
+<span id="cb7-2"><a href="statistical-genetics.html#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="ex">using</span> MendelTwoPointLinkage, CSV</span>
+<span id="cb7-3"><a href="statistical-genetics.html#cb7-3" aria-hidden="true" tabindex="-1"></a><span class="ex">TwoPointLinkage</span><span class="er">(</span><span class="st">&quot;Control_file.txt&quot;</span><span class="kw">)</span></span>
+<span id="cb7-4"><a href="statistical-genetics.html#cb7-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-5"><a href="statistical-genetics.html#cb7-5" aria-hidden="true" tabindex="-1"></a><span class="co"># Multipoint linkage analysis</span></span>
+<span id="cb7-6"><a href="statistical-genetics.html#cb7-6" aria-hidden="true" tabindex="-1"></a><span class="ex">using</span> MendelLocationScores, CSV</span>
+<span id="cb7-7"><a href="statistical-genetics.html#cb7-7" aria-hidden="true" tabindex="-1"></a><span class="ex">LocationScores</span><span class="er">(</span><span class="st">&quot;Control_file.txt&quot;</span><span class="kw">)</span></span></code></pre></div>
 </div>
 <div id="population-substructure" class="section level2 hasAnchor" number="4.5">
 <h2><span class="header-section-number">4.5</span> Population Substructure<a href="statistical-genetics.html#population-substructure" class="anchor-section" aria-label="Anchor link to header"></a></h2>
 <p>Given a large number of samples from a population, we cluster individuals by degree of identity by state using PLINK in order to identify subgroups with shared ancestry.</p>
-<div class="sourceCode" id="cb9"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb9-1"><a href="statistical-genetics.html#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="ex">plink</span> <span class="at">--file</span> mydata <span class="at">--cluster</span></span>
-<span id="cb9-2"><a href="statistical-genetics.html#cb9-2" aria-hidden="true" tabindex="-1"></a><span class="co"># dimensional reduction to 4D then plot two coordinates</span></span>
-<span id="cb9-3"><a href="statistical-genetics.html#cb9-3" aria-hidden="true" tabindex="-1"></a><span class="ex">plink</span> <span class="at">--file</span> mydata <span class="at">--read-genome</span> plink.genome <span class="at">--cluster</span> <span class="at">--mds-plot</span> 4</span></code></pre></div>
+<div class="sourceCode" id="cb8"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb8-1"><a href="statistical-genetics.html#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="ex">plink</span> <span class="at">--file</span> mydata <span class="at">--cluster</span></span>
+<span id="cb8-2"><a href="statistical-genetics.html#cb8-2" aria-hidden="true" tabindex="-1"></a><span class="co"># dimensional reduction to 4D then plot two coordinates</span></span>
+<span id="cb8-3"><a href="statistical-genetics.html#cb8-3" aria-hidden="true" tabindex="-1"></a><span class="ex">plink</span> <span class="at">--file</span> mydata <span class="at">--read-genome</span> plink.genome <span class="at">--cluster</span> <span class="at">--mds-plot</span> 4</span></code></pre></div>
 
 </div>
 </div>
